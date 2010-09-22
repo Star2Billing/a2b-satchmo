@@ -1,0 +1,119 @@
+
+
+     ___________________________________________________________________________________________________________________________________________________________________
+
+                                                                        A2B-SATCHMO : REQUIREMENTS
+     ___________________________________________________________________________________________________________________________________________________________________
+
+
+
+  Python 2.6 >=
+
+
+* Add repository on CentOS 5.4 
+--------------------------------
+
+	i386:
+		rpm -Uvh http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-3.noarch.rpm
+	x86_64:
+		rpm -Uvh http://download.fedora.redhat.com/pub/epel/5/x86_64/epel-release-5-3.noarch.rpm
+
+
+
+* Install Git 
+---------------
+
+	yum install git
+
+
+
+* Install django
+------------------
+
+    http://www.djangoproject.com/download/
+    
+    First, download Django-1.2.1.tar.gz. 
+        wget wget http://www.djangoproject.com/download/1.2.1/tarball/
+    
+    Then,
+        tar xzvf Django-1.2.1.tar.gz
+        cd Django-1.2.1
+        sudo python setup.py install
+
+
+
+* django-debug-toolbar
+------------------------
+
+	download :
+	    wget http://github.com/robhudson/django-debug-toolbar/tarball/0.8.2
+	
+	install :
+	    tar -xvzf robhudson-django-debug-toolbar-0.8.2-0-g55b5a77.tar.gz 
+	    cd robhudson-django-debug-toolbar-55b5a77/
+	    sudo python setup.py install
+	    sudo rm -rf build/ dist django_debug_toolbar.egg-info/
+
+
+
+* django-dilla 
+----------------
+    
+    inside the cdr-stats directory :
+	svn checkout http://django-dilla.googlecode.com/svn/trunk/dilla dilla
+
+
+
+* django-extensions
+-----------------------
+
+	Download sources :
+	    svn checkout http://django-command-extensions.googlecode.com/svn/trunk/ django-command-extensions
+	
+	Then install:
+        sudo python setup.py install
+        
+        # very useful to generate graph :
+            # Create a PNG image file called my_project_visualized.png with application grouping
+            python `manage.py graph_models -a -g -o my_project_visualized.png
+
+
+* python-dateutil
+-------------------
+
+    Install :
+        sudo easy_install DateUtils
+
+
+* Django-uni-form
+----------------------
+
+    install :
+    sudo easy_install django-uni-form
+
+
+* South
+-------------
+    
+    install :
+    sudo easy_install South
+
+
+* BluePrint 
+-------------
+    
+    Css framework : Blueprint
+    this is included
+    
+    
+
+* django-paypal
+----------------
+	cd into a2billing directory
+	git clone git://github.com/johnboxall/django-paypal.git paypal
+
+
+* django-piston
+---------------
+    install :
+    easy_install django-piston
