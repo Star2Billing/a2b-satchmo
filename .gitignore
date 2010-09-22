@@ -1,4 +1,5 @@
 *.pyc
+*pyc*
 *dilla*
 *.db
 *nbproject*

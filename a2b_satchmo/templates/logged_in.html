@@ -37,7 +37,9 @@
         <th scope="col">CARD NUMBER :</th>
         <td scope="row">{{ card.username }}</td>
         <th scope="col">BALANCE REMAINING :</th>
-        <td scope="row">{{ card.credit }} {{card.currency}}</td>
+        <td scope="row">{{ card.credit }} 
+            {% if card.currency %} {{ card.currency|safe }} {% endif %}
+        </td>
     </tr>
     <tr>
         <th scope="col">CALLING PACKAGE :</th>

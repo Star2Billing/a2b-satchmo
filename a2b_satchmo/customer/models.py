@@ -549,7 +549,8 @@ class Card(models.Model):
     id_group = models.ForeignKey(Cardgroup, db_column ="id_group", null=True, blank=True,verbose_name='GROUP')
     id_timezone = models.ForeignKey(Timezone,db_column ="id_timezone",null=True, blank=True,verbose_name='Timezone')
     language = models.CharField(choices=LANGUAGES,max_length=15, blank=True, verbose_name='LG')
-    currency = models.ForeignKey(Currencies,db_column ="currency",max_length=9,blank=True,verbose_name='Currency')
+    #currency = models.ForeignKey(Currencies,db_column ="currency",max_length=9,blank=True,verbose_name='Currency')
+    currency = models.CharField(max_length=180,null=True, blank=True,)
     id_campaign = models.ForeignKey(Campaign,db_column ="id_campaign",null=True, blank=True,verbose_name='Campaign')
 
 
