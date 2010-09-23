@@ -127,7 +127,7 @@ INSTALLED_APPS = (
     #'admin_tools',
     #'admin_tools.theming',
     #'admin_tools.menu',
-    'admin_tools.dashboard',
+    #'admin_tools.dashboard',
 
     #'grappelli',
     
@@ -150,9 +150,10 @@ INSTALLED_APPS = (
     #'tax.modules.area',
     #'tax.modules.percent',
     'shipping',
+    'shipping.modules.no',
     'product',
-    #'product.modules.configurable',
-    #'product.modules.custom',
+    'product.modules.configurable',
+    'product.modules.custom',
 
     'payment',
     'payment.modules.dummy',
@@ -160,7 +161,7 @@ INSTALLED_APPS = (
     'payment.modules.paypal',
     'payment.modules.authorizenet',
     'payment.modules.google',
-    #'satchmo_ext.satchmo_toolbar',
+    'satchmo_ext.satchmo_toolbar',
     'satchmo_utils',
     'app_plugins',
     'a2b_satchmo.localsite',
@@ -182,8 +183,8 @@ INSTALLED_APPS = (
 )
 
 #ADMIN_TOOLS_MENU = 'a2b_satchmo.menu.CustomMenu'
-ADMIN_TOOLS_INDEX_DASHBOARD = 'a2b_satchmo.dashboard.CustomIndexDashboard'
-ADMIN_TOOLS_APP_INDEX_DASHBOARD = 'a2b_satchmo.dashboard.CustomAppIndexDashboard'
+#ADMIN_TOOLS_INDEX_DASHBOARD = 'a2b_satchmo.dashboard.CustomIndexDashboard'
+#ADMIN_TOOLS_APP_INDEX_DASHBOARD = 'a2b_satchmo.dashboard.CustomAppIndexDashboard'
 #ADMIN_TOOLS_THEMING_CSS = 'css/theming.css'
 
 PAYPAL_RECEIVER_EMAIL = "yourpaypalemail@example.com"
