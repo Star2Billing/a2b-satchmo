@@ -42,64 +42,7 @@ class Country(models.Model):
 
     class Meta:
         db_table = u'cc_country'
-"""
-class AuthGroup(models.Model):
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(unique=True, max_length=240)
-    class Meta:
-        db_table = u'auth_group'
 
-class AuthGroupPermissions(models.Model):
-    id = models.IntegerField(primary_key=True)
-    group_id = models.IntegerField(unique=True)
-    permission_id = models.IntegerField()
-    class Meta:
-        db_table = u'auth_group_permissions'
-
-class AuthMessage(models.Model):
-    id = models.IntegerField(primary_key=True)
-    user_id = models.IntegerField()
-    message = models.TextField()
-    class Meta:
-        db_table = u'auth_message'
-
-class AuthPermission(models.Model):
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=150)
-    content_type_id = models.IntegerField()
-    codename = models.CharField(unique=True, max_length=255)
-    class Meta:
-        db_table = u'auth_permission'
-
-class AuthUser(models.Model):
-    id = models.IntegerField(primary_key=True)
-    username = models.CharField(unique=True, max_length=90)
-    first_name = models.CharField(max_length=90)
-    last_name = models.CharField(max_length=90)
-    email = models.CharField(max_length=225)
-    password = models.CharField(max_length=384)
-    is_staff = models.IntegerField()
-    is_active = models.IntegerField()
-    is_superuser = models.IntegerField()
-    last_login = models.DateTimeField()
-    date_joined = models.DateTimeField()
-    class Meta:
-        db_table = u'auth_user'
-
-class AuthUserGroups(models.Model):
-    id = models.IntegerField(primary_key=True)
-    user_id = models.IntegerField(unique=True)
-    group_id = models.IntegerField()
-    class Meta:
-        db_table = u'auth_user_groups'
-
-class AuthUserUserPermissions(models.Model):
-    id = models.IntegerField(primary_key=True)
-    user_id = models.IntegerField(unique=True)
-    permission_id = models.IntegerField()
-    class Meta:
-        db_table = u'auth_user_user_permissions'
-"""
 
 class Agent(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -166,6 +109,30 @@ class AgentTariffgroup(models.Model):
     class Meta:
         db_table = u'cc_agent_tariffgroup'
 
+class Trunk(models.Model):
+    id_trunk = models.IntegerField(primary_key=True)
+    trunkcode = models.CharField(max_length=150, blank=True)
+    trunkprefix = models.CharField(max_length=60, blank=True)
+    providertech = models.CharField(max_length=60)
+    providerip = models.CharField(max_length=240)
+    removeprefix = models.CharField(max_length=60, blank=True)
+    secondusedreal = models.IntegerField(null=True, blank=True)
+    secondusedcarrier = models.IntegerField(null=True, blank=True)
+    secondusedratecard = models.IntegerField(null=True, blank=True)
+    creationdate = models.DateTimeField()
+    failover_trunk = models.IntegerField(null=True, blank=True)
+    addparameter = models.CharField(max_length=360, blank=True)
+    id_provider = models.IntegerField(null=True, blank=True)
+    inuse = models.IntegerField(null=True, blank=True)
+    maxuse = models.IntegerField(null=True, blank=True)
+    status = models.IntegerField(null=True, blank=True)
+    if_max_use = models.IntegerField(null=True, blank=True)
+    class Meta:
+        db_table = u'cc_trunk'
+
+    def __unicode__(self):
+        return '[%s] %s' %(self.id_trunk, self.trunkcode)
+
 class Alarm(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.TextField()
@@ -173,7 +140,7 @@ class Alarm(models.Model):
     type = models.IntegerField()
     maxvalue = models.FloatField()
     minvalue = models.FloatField()
-    id_trunk = models.IntegerField(null=True, blank=True)
+    id_trunk = models.ForeignKey(Trunk, db_column ="id_trunk", null=True, blank=True)
     status = models.IntegerField()
     numberofrun = models.IntegerField()
     numberofalarm = models.IntegerField()
@@ -183,6 +150,9 @@ class Alarm(models.Model):
     class Meta:
         db_table = u'cc_alarm'
 
+    def __unicode__(self):
+        return '[%s] %s' %(self.id, self.name)
+    
 class AlarmReport(models.Model):
     id = models.IntegerField(primary_key=True)
     cc_alarm_id = models.IntegerField()

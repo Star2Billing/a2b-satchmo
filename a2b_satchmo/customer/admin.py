@@ -30,6 +30,21 @@ class LanguageAdmin(admin.ModelAdmin):
 admin.site.register(Language, LanguageAdmin)
 
 
+class TrunkAdmin(admin.ModelAdmin):
+    list_display = ('id_trunk', 'trunkcode', 'trunkprefix','providertech','providerip')
+    list_display_links = ('id_trunk', 'trunkcode',) 
+
+admin.site.register(Trunk, TrunkAdmin)
+
+
+class AlarmAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'periode','type')
+    list_display_links = ('id', 'name',) 
+
+admin.site.register(Alarm, AlarmAdmin)
+
+
+
 class CardAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
