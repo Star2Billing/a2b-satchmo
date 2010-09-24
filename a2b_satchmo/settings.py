@@ -162,6 +162,7 @@ INSTALLED_APPS = (
     'payment.modules.authorizenet',
     'payment.modules.google',
     'satchmo_ext.satchmo_toolbar',
+    'satchmo_ext.newsletter',
     'satchmo_utils',
     'app_plugins',
     'a2b_satchmo.localsite',
