@@ -6,11 +6,18 @@ from a2b_satchmo.customer.models import Language
 from django.conf import settings
 from django.conf.urls.defaults import *
 from satchmo_store.urls import urlpatterns
+from satchmo_utils.urlhelper import replace_urlpattern
+from product.models import Product
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
 
+product_list = Product.objects.filter(featured=True)
+
+replacement = url(r'^quick_order/$', 'satchmo_store.shop.views.cart.add_multiple',
+            {'products': product_list}, 'satchmo_quick_order')
+replace_urlpattern(urlpatterns, replacement)
 
 urlpatterns += patterns('',
     # redirect

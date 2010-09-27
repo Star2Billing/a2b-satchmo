@@ -2,6 +2,8 @@ from django.contrib import admin
 from a2b_satchmo.customer.models import *
 #from django.contrib.sites.models import Site
 #from django.contrib.admin.views.main import ChangeList
+from satchmo_store.shop.models import Order, OrderItem
+from satchmo_store.shop.admin import OrderOptions
 
 # Language
 class LanguageAdmin(admin.ModelAdmin):
@@ -79,7 +81,28 @@ class CallAdmin(admin.ModelAdmin):
         super(CallAdmin, self).__init__(*args, **kwargs)
         self.list_display_links = []
 
-    
-
-
 admin.site.register(Call, CallAdmin)
+
+
+
+
+class OrderExtend:
+    def order_sku(self):
+        allsku = ''
+        for item in self.orderitem_set.all():
+            allsku += "%s<br />" % item.product.sku
+        return allsku
+    order_sku.allow_tags = True
+    order_sku.short_description = "Order SKUs"
+
+Order.__bases__ += (OrderExtend,)
+
+admin.site.unregister(Order)
+
+class CustomOrderAdmin(OrderOptions):
+    list_display = ('id', 'order_sku', 'contact', 'time_stamp',
+                    'order_total', 'balance_forward', 'status',
+                    'invoice', 'packingslip','shippinglabel')
+
+admin.site.register(Order, CustomOrderAdmin)
+
