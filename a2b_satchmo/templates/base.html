@@ -1,11 +1,11 @@
-{% load i18n %}
+{% load i18n satchmo_category satchmo_google satchmo_util satchmo_currency satchmo_discounts app_plugins normalize_decimal %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
   <title>{% block title %}{{ shop_name }}{% if pagetitle %}: {{ pagetitle }}{% endif %}{% endblock %}</title>
-  
+  {% plugin_point "page_head" %}
   <!-- bluetrip css -->
     <link rel="stylesheet" href="{{MEDIA_URL}}/css/blueprint/screen.css" type="text/css" media="screen, projection" />
     <link rel="stylesheet" href="{{MEDIA_URL}}/css/blueprint/print.css" type="text/css" media="print" />
@@ -55,7 +55,7 @@
 </head>
 
 <body{% if bodyid %} id="{{ bodyid }}"{% endif %}{% if bodyclass %} class="{{ bodyclass }}"{% endif %}>
-
+{% plugin_point "page_top" %}
 {% block head %} {% endblock %}
 
 
@@ -81,7 +81,7 @@
        <a href="../profile/" class="fg-button ui-state-default ui-corner-all">Profile</a>&nbsp;
        <a href="../cdr/" class="fg-button ui-state-default ui-corner-all">Call Record</a>&nbsp;
        <a href="../logout" class="fg-button ui-state-default ui-corner-all">logout</a>
-      {% endif %}
+      {% endif %}      
     </div>
 </div>
 <br/><br/>
@@ -100,75 +100,87 @@
 
 <div class="span-25 last">
 
-	<div class="span-4 last">
-	<div id="sidebar-secondary">
+	<div class="span-5 last">
+		{% block sidebar-secondary %}
+		<div>
+			{% satchmo_search_form %}
+		</div>
 		<div>
 		{% block sidebar %}
 		<h3>{% trans "Shop Categories" %}</h3>
 			{% block sidebar-categories %}
 			<div id="menu_container">
-			<ul>
-				<li>1</li>		
-			</ul>
+		        {% if category.id %}
+		            {% category_tree category.id %}
+		        {% else %}
+		            {% if product.get_category %}
+		                {% category_tree product.get_category.id %}
+		            {% else %}
+		                {% category_tree %}
+		            {% endif %}
+		        {% endif %}
 			</div>
 			{% endblock sidebar-categories %}
-		{% endblock sidebar %}
+			
+			{% block sidebar-secondary-bottom %}
+			{% plugin_point "sidebar_secondary_bottom" %}
+			{% endblock %}
+			{% endblock sidebar %}
 		</div>
+		{% endblock sidebar-secondary %}
 	</div>
 	</div>
 
-<div class="span-18 last">
+<div class="span-16 last">
 {% block content %}{% endblock %}
 </div>
 
 
 	       <div class="span-3 last">
 		<div id="sidebar-primary">{# rightnav #}
-			{% block sidebar-primary %}
-			<h3>{% trans "Quick Links" %}</h3>
-			{% url satchmo_product_recently_added as recenturl %}
-			{% if recenturl %}<a href="{{ recenturl }}">{% trans "Recently Added" %}</a>{% endif %}
-			{% url satchmo_product_best_selling as popularurl %}
-			{% if popularurl %}<br/><a href="{{ popularurl }}">{% trans "Best Sellers" %}</a><br/>{% endif %}
-		{% url satchmo_category_index as category_index %}
-		{% if category_index %} <a href="{{ category_index }}">{% trans "Category Index" %}</a><br /> {% endif %}
-		{% url satchmo_quick_order as quick_order %}
-		{% if quick_order %}<a href="{{ quick_order }}">{% trans "Quick Order" %}</a> {% endif %}
-		
+		{% block sidebar-primary %}
+		<h3>{% trans "Quick Links" %}</h3>
+		{% url satchmo_product_recently_added as recenturl %}
+		{% if recenturl %}<a href="{{ recenturl }}">{% trans "Recently Added" %}</a>{% endif %}
+		{% url satchmo_product_best_selling as popularurl %}
+		{% if popularurl %}<br/><a href="{{ popularurl }}">{% trans "Best Sellers" %}</a><br/>{% endif %}
+        {% url satchmo_category_index as category_index %}
+        {% if category_index %} <a href="{{ category_index }}">{% trans "Category Index" %}</a><br /> {% endif %}
+        {% url satchmo_quick_order as quick_order %}
+        {% if quick_order %}<a href="{{ quick_order }}">{% trans "Quick Order" %}</a> {% endif %}
+		{% plugin_point "sidebar_links" %}
 
-		    <h3>{% trans "Account Information" %}</h3>
-		    {% if user.is_staff %}
-			<a href="{% url admin:index %}" target="blank">{% trans "Admin" %}</a><br/>
-			{% endif %}
-		    {% if user.is_authenticated %}
-			{% url satchmo_account_info as accounturl %}
-		{% if accounturl %}<a href="{{ accounturl }}" target="blank">{% trans "Account Details" %}</a><br/>{% endif %}
-		<a href="{{ logout_url }}?next={{request.path}}">{% trans "Log out" %}</a><br/>
-		    {% else %}
-		<a href="{{ login_url }}?next={{request.path}}">{% trans "Log in" %}</a><br/>
-		    {% endif %}
+	    <h3>{% trans "Account Information" %}</h3>
+	    {% if user.is_staff %}
+		<a href="{% url admin:index %}" target="blank">{% trans "Admin" %}</a><br/>
+		{% endif %}
+	    {% if user.is_authenticated %}
+		{% url satchmo_account_info as accounturl %}
+        {% if accounturl %}<a href="{{ accounturl }}" target="blank">{% trans "Account Details" %}</a><br/>{% endif %}
+        <a href="{{ logout_url }}?next={{request.path}}">{% trans "Log out" %}</a><br/>
+	    {% else %}
+        <a href="{{ login_url }}?next={{request.path}}">{% trans "Log in" %}</a><br/>
+	    {% endif %}
 
-			{% url satchmo_cart as carturl %}
-		    {% if carturl %}<a href="{{ carturl }}">{% trans "Cart" %}</a>{% endif %}
+		{% url satchmo_cart as carturl %}
+	    {% if carturl %}<a href="{{ carturl }}">{% trans "Cart" %}</a>{% endif %}
 
-		    {% if not cart.is_empty %}
-
-		    {% url satchmo_checkout-step1 as checkouturl %}
-		    {% if checkouturl %}<a href="{{ checkouturl }}">{% trans "Check out" %}</a>{% endif %}
-		    {% endif %}
+	    {% if not cart.is_empty %}
+            ({{ cart_count|normalize_decimal }} - {% if sale %}{{ cart|discount_cart_total:sale|currency }}{% else %}{{cart.total|currency}}{% endif%}) <br/>
+            {% url satchmo_checkout-step1 as checkouturl %}
+            {% if checkouturl %}<a href="{{ checkouturl }}">{% trans "Check out" %}</a>{% endif %}
+	    {% endif %}
 	
+		{% plugin_point "shop_sidebar_actions" %}
+    
+		{% url satchmo_contact as contact_url %}
+	    {% if contact_url %}<p><a href="{{ contact_url }}">{% trans "Contact Us" %}</a></p>{% endif %}
 		
-	    
-			{% url satchmo_contact as contact_url %}
-		    {% if contact_url %}<p><a href="{{ contact_url }}">{% trans "Contact Us" %}</a></p>{% endif %}
-
-		
-
-			{% block sidebar-primary-bottom %}
-		
-			{% endblock %}
-			{% endblock sidebar-primary %}
-		</div>
+		{% block sidebar-primary-bottom %}
+		{% plugin_point "shop_sidebar_primary" %}
+		{% endblock %}
+		{% endblock sidebar-primary %}
+	</div>
 	
 		</div>
 

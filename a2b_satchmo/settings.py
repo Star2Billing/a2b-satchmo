@@ -1,5 +1,6 @@
 # Django settings for mysite project.
 import os
+
 #DIRNAME = os.path.dirname(__file__)
 DIRNAME = os.path.abspath(os.path.dirname(__file__))
 
@@ -130,14 +131,15 @@ INSTALLED_APPS = (
     #'admin_tools.dashboard',
 
     #'grappelli',
+    'django.contrib.sites',
+    'satchmo_store.shop',
     
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.comments',
     'django.contrib.sessions',
-    'django.contrib.sites',
+    'django.contrib.sitemaps',
     
-    'django.contrib.sites',
-    'satchmo_store.shop',
     'registration',
     'sorl.thumbnail',
     'keyedcache',
@@ -161,7 +163,7 @@ INSTALLED_APPS = (
     'payment.modules.paypal',
     'payment.modules.authorizenet',
     'payment.modules.google',
-    'satchmo_ext.satchmo_toolbar',
+    #'satchmo_ext.satchmo_toolbar',
     'satchmo_ext.newsletter',
     'satchmo_utils',
     'app_plugins',
@@ -190,12 +192,25 @@ INSTALLED_APPS = (
 
 PAYPAL_RECEIVER_EMAIL = "yourpaypalemail@example.com"
 
+
+LANGUAGES = (
+    ('en', 'English'),
+    ('fr', 'French'),
+    ('es', 'Spanish'),
+    ('br', 'Brazilian'),
+)
+
+L10N_SETTINGS = {
+}
+
 #### Satchmo unique variables ####
-#from django.conf.urls.defaults import patterns, include
+from django.conf.urls.defaults import patterns, include
 SATCHMO_SETTINGS = {
     'SHOP_BASE' : '',
     'MULTISHOP' : False,
     #'SHOP_URLS' : patterns('satchmo_store.shop.views',)
+    'SHOP_URLS' : patterns('', (r'^i18n/', include('l10n.urls')),)
+
 }
 
 AUTHENTICATION_BACKENDS = (
@@ -206,12 +221,6 @@ AUTHENTICATION_BACKENDS = (
 
 gettext = lambda s: s
 
-LANGUAGES = (
-    ('en', gettext('English')),
-    ('fr', gettext('French')),  
-    ('es', gettext('Spanish')),  
-    ('br', gettext('Brazilian')),
-)
 
 
 try :

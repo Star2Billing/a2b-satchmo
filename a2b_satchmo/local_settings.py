@@ -23,9 +23,14 @@ MEDIA_ROOT = os.path.join(DIRNAME, 'resources/')
 gettext_noop = lambda s:s
 
 LANGUAGE_CODE = 'en-us'
+
 LANGUAGES = (
-   ('en', gettext_noop('English')),
+   ('en', 'English'),
+   ('fr', "Français"),
+   ('de', "Deutsch"),
 )
+
+
 
 # Only set these if Satchmo is part of another Django project
 #These are used when loading the test data
