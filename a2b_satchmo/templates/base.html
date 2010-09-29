@@ -166,7 +166,7 @@
 	    {% if carturl %}<a href="{{ carturl }}">{% trans "Cart" %}</a>{% endif %}
 
 	    {% if not cart.is_empty %}
-            ({{ cart_count|normalize_decimal }} - {% if sale %}{{ cart|discount_cart_total:sale|currency }}{% else %}{{cart.total|currency}}{% endif%}) <br/>
+            ({{ cart_count|normalize_decimal }} - {% if sale %}{{ cart|discount_cart_total:sale|currency }}{% else %}{{ cart.total|currency }}{% endif%}) <br/>
             {% url satchmo_checkout-step1 as checkouturl %}
             {% if checkouturl %}<a href="{{ checkouturl }}">{% trans "Check out" %}</a>{% endif %}
 	    {% endif %}

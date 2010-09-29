@@ -147,15 +147,20 @@ INSTALLED_APPS = (
     'l10n',
     #'satchmo_utils.thumbnail',
     'satchmo_store.contact',
+
     'tax',
-    #'tax.modules.no',
-    #'tax.modules.area',
-    #'tax.modules.percent',
+    'tax.modules.no',
+    'tax.modules.area',
+    'tax.modules.percent',
+    'tax.modules.us_sst',
+    
     'shipping',
     'shipping.modules.no',
+
     'product',
     'product.modules.configurable',
     'product.modules.custom',
+    #'product.modules.subscription',
 
     'payment',
     'payment.modules.dummy',
@@ -163,6 +168,8 @@ INSTALLED_APPS = (
     'payment.modules.paypal',
     'payment.modules.authorizenet',
     'payment.modules.google',
+    'satchmo_ext',
+    'satchmo_ext.recentlist',
     #'satchmo_ext.satchmo_toolbar',
     'satchmo_ext.newsletter',
     'satchmo_utils',
