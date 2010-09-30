@@ -21,7 +21,7 @@ replace_urlpattern(urlpatterns, replacement)
 
 urlpatterns += patterns('',
     # redirect
-    #('^$', 'django.views.generic.simple.redirect_to', {'url': '/'}),
+    #('^$', 'django.views.generic.simple.redirect_to', {'url': 'accounts/login/'}),
     #(r'^/', include('a2b_satchmo.urls')),
     (r'^resources/(?P<path>.*)$',  'django.views.static.serve',{ 'document_root': settings.MEDIA_ROOT } ),
 
@@ -42,7 +42,7 @@ urlpatterns += patterns('',
 )
 
 urlpatterns += patterns('a2b_satchmo.customer.views',
-    (r'^$', 'index_view'),
+    #(r'^$', 'index_view'),
     (r'^login/$', 'check_login'),
     (r'^logout/$', 'logout_view'),
     (r'^profile/$', 'profile_view'),

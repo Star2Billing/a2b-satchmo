@@ -160,7 +160,7 @@ INSTALLED_APPS = (
     'product',
     'product.modules.configurable',
     'product.modules.custom',
-    #'product.modules.subscription',
+    'product.modules.subscription',
 
     'payment',
     'payment.modules.dummy',
@@ -213,7 +213,7 @@ L10N_SETTINGS = {
 #### Satchmo unique variables ####
 from django.conf.urls.defaults import patterns, include
 SATCHMO_SETTINGS = {
-    'SHOP_BASE' : '',
+    'SHOP_BASE' : '/',
     'MULTISHOP' : False,
     #'SHOP_URLS' : patterns('satchmo_store.shop.views',)
     'SHOP_URLS' : patterns('', (r'^i18n/', include('l10n.urls')),)

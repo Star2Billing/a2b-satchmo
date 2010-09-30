@@ -58,7 +58,7 @@ SECRET_KEY = 'EXAMPLE SECRET KEY'
 
 #These are used when loading the test data
 SITE_DOMAIN = "127.0.0.1"
-SITE_NAME = "Simple Satchmo"
+SITE_NAME = "A2B Satchmo"
 
 # not suitable for deployment, for testing only, for deployment strongly consider memcached.
 CACHE_BACKEND = "locmem:///"
