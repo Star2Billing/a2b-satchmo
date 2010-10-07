@@ -1,0 +1,12 @@
+{% load i18n %}
+{% load shop_extras %}
+{% block footer %}
+<div id="footer">
+{% blocktrans %}Powered by <a href="http://www.star2billing.com">Star2Billing</a>.{% endblocktrans %} 
+{% with flatpage_list as pages %}
+     {% for page in pages %}
+        | <a href="{{ page.url }}">{{ page.title }}</a>
+     {% endfor %}
+{% endwith %}
+</div>
+{% endblock %}

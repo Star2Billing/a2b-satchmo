@@ -95,6 +95,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'pagination.middleware.PaginationMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -132,6 +133,7 @@ INSTALLED_APPS = (
 
     #'grappelli',
     'django.contrib.sites',
+    'django.contrib.flatpages',
     'satchmo_store.shop',
     
     'django.contrib.auth',
@@ -163,7 +165,7 @@ INSTALLED_APPS = (
     'product.modules.subscription',
 
     'payment',
-    'payment.modules.dummy',
+    #'payment.modules.dummy',
     'payment.modules.purchaseorder',
     'payment.modules.paypal',
     'payment.modules.authorizenet',
@@ -172,6 +174,8 @@ INSTALLED_APPS = (
     'satchmo_ext.recentlist',
     #'satchmo_ext.satchmo_toolbar',
     'satchmo_ext.newsletter',
+    #'satchmo_ext.newsletter.simple',
+    #'satchmo_ext.newsletter.mailman',
     'satchmo_utils',
     'app_plugins',
     'a2b_satchmo.localsite',
@@ -227,7 +231,6 @@ AUTHENTICATION_BACKENDS = (
 
 
 gettext = lambda s: s
-
 
 
 try :

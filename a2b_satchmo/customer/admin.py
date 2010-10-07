@@ -102,7 +102,7 @@ admin.site.unregister(Order)
 class CustomOrderAdmin(OrderOptions):
     list_display = ('id', 'order_sku', 'contact', 'time_stamp',
                     'order_total', 'balance_forward', 'status',
-                    'invoice', 'packingslip','shippinglabel')
+                    'invoice', 'packingslip')
 
 admin.site.register(Order, CustomOrderAdmin)
 

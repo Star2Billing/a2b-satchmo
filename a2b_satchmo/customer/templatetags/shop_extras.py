@@ -1,6 +1,7 @@
 from django import template
 from django.template.defaultfilters import *
 from datetime import datetime
+from django.contrib.flatpages.models import FlatPage
 import operator
 
 register = template.Library()
@@ -11,3 +12,8 @@ def percent(value):
 
 
 register.filter('percent', percent)
+
+@register.inclusion_tag("footer.html")
+def footer_links():
+    flatpage_list = FlatPage.objects.all()
+    return {'flatpage_list': flatpage_list }

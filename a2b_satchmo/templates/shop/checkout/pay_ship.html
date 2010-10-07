@@ -20,4 +20,5 @@
     <tr><td><label for="id_ccv">{% trans "CCV" %}</label></td><td> {{ form.ccv}}</td></tr>
     {% if form.ccv.errors %}<tr><td class="error" colspan="2">*** {{ form.ccv.errors|join:", " }}</td></tr>{% endif %}
 
+    <tr><td>{{ form.terms }} {{ form.terms.label|safe }}</td><td>{% if form.terms.errors %}<br/>**{{ form.terms.errors|join:", " }}{% endif %}</td></tr>
 {% endblock %}

@@ -1,4 +1,5 @@
 {% load i18n satchmo_category satchmo_google satchmo_util satchmo_currency satchmo_discounts app_plugins normalize_decimal %}
+{% load shop_extras %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}">
@@ -137,10 +138,11 @@
 <div class="span-16 last">
 
 {% if user.is_authenticated or request.path == "/accounts/register/" or request.path == "/accounts/register/complete/" or request.path == "/accounts/password_reset/"  or request.path == "/accounts/password_reset/done/" %}
-    
+  
     {% block content %}{% endblock %}
     
 {% else %}
+
     {% if form.non_field_errors %}
     <h2>{% trans "Please correct the following error:" %}</h2>
     {{ form.non_field_errors }}
@@ -172,6 +174,7 @@
     {% endif %}
     
 {% endif %}
+
 </div>
 
 
@@ -228,12 +231,7 @@
 </div>
 
 
-
-<div id="footer">
-{% block footer %}
-{% blocktrans %}Powered by <a href="http://www.star2billing.com">Star2Billing</a>.{% endblocktrans %}
-{% endblock %}
-</div>
+{% footer_links %}
 
 </div>
 

@@ -30,6 +30,7 @@
 
     {% block payment_table %}
     {# put your payment module specific rows here.  For example, CC number. #}
+    <tr><td>{{ form.terms }} {{ form.terms.label|safe }}</td><td>{% if form.terms.errors %}<br/>**{{ form.terms.errors|join:", " }}{% endif %}</td></tr>
     {% endblock %}
     
     {% if cart.is_shippable %}
@@ -58,6 +59,7 @@
 
         <tr><!--<td colspan="2"><h4>{% trans "There are no items in this order to ship." %}</h4></td>--></tr>
         <tr><!--<td colspan="2"> {{ form.shipping }} </td>--></tr>
+
     </table>
 
     {% endif %}
