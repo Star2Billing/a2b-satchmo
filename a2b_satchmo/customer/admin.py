@@ -5,6 +5,7 @@ from a2b_satchmo.customer.models import *
 from satchmo_store.shop.models import Order, OrderItem
 from satchmo_store.shop.admin import OrderOptions
 
+
 # Language
 class LanguageAdmin(admin.ModelAdmin):
     list_display = ('name','lname','charset')

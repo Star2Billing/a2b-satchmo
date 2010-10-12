@@ -83,19 +83,20 @@ TEMPLATE_LOADERS = (
 
 
 MIDDLEWARE_CLASSES = (
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',    
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.csrf.CsrfResponseMiddleware',
     "django.middleware.doc.XViewMiddleware",
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
     #"threaded_multihost.middleware.ThreadLocalMiddleware",
     "satchmo_store.shop.SSLMiddleware.SSLRedirect",
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'pagination.middleware.PaginationMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+    
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -132,15 +133,16 @@ INSTALLED_APPS = (
     #'admin_tools.dashboard',
 
     #'grappelli',
-    'django.contrib.sites',
-    'django.contrib.flatpages',
+    
     'satchmo_store.shop',
     
-    'django.contrib.auth',
+    'django.contrib.auth',    
     'django.contrib.contenttypes',
     'django.contrib.comments',
+    'django.contrib.flatpages',    
     'django.contrib.sessions',
     'django.contrib.sitemaps',
+    'django.contrib.sites',
     
     'registration',
     'sorl.thumbnail',
@@ -165,7 +167,8 @@ INSTALLED_APPS = (
     'product.modules.subscription',
 
     'payment',
-    #'payment.modules.dummy',
+    'payment.modules.autosuccess',
+    'payment.modules.cod',
     'payment.modules.purchaseorder',
     'payment.modules.paypal',
     'payment.modules.authorizenet',
@@ -194,6 +197,8 @@ INSTALLED_APPS = (
     #'paypal.standard.ipn', 
     'a2b_satchmo.api',
     'django_extensions',
+    'django_cron',
+    #'staticfiles',
 )
 
 #ADMIN_TOOLS_MENU = 'a2b_satchmo.menu.CustomMenu'
@@ -212,7 +217,10 @@ LANGUAGES = (
 )
 
 L10N_SETTINGS = {
+
 }
+
+
 
 #### Satchmo unique variables ####
 from django.conf.urls.defaults import patterns, include

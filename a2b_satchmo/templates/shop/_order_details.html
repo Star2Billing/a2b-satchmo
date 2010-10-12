@@ -62,7 +62,6 @@
 {% trans "Shipping" %} + {% if default_view_tax %}{{ order.shipping_with_tax|currency }}{% else %}{{order.shipping_sub_total|currency}}
 {% endif %}<br/>
 -->
-<tr><td>{{ form.terms }} {{ form.terms.label|safe }}</td><td>{% if form.terms.errors %}<br/>**{{ form.terms.errors|join:", " }}{% endif %}</td></tr>
 
 {% if order.tax %}
     {% if default_view_tax %}

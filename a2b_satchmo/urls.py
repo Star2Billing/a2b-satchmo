@@ -5,12 +5,17 @@ from a2b_satchmo.customer.models import Language
 
 from django.conf import settings
 from django.conf.urls.defaults import *
-from satchmo_store.urls import urlpatterns
+
+#from django.contrib.billing.urls import urlpatterns as billingpattern
+from satchmo_store.urls import urlpatterns 
 from satchmo_utils.urlhelper import replace_urlpattern
 from product.models import Product
 
+import django_cron
+django_cron.autodiscover()
+
 # Uncomment the next two lines to enable the admin:
-from django.contrib import admin
+from django.contrib import admin 
 admin.autodiscover()
 
 product_list = Product.objects.filter(featured=True)
@@ -18,6 +23,13 @@ product_list = Product.objects.filter(featured=True)
 replacement = url(r'^quick_order/$', 'satchmo_store.shop.views.cart.add_multiple',
             {'products': product_list}, 'satchmo_quick_order')
 replace_urlpattern(urlpatterns, replacement)
+
+replacement = url(r'^tracking/(?P<order_id>\d+)/$', 'a2b_satchmo.localsite.views.order_tracking',{}, 'satchmo_order_tracking')
+replace_urlpattern(urlpatterns, replacement)
+
+
+
+#urlpatterns += billingpattern
 
 urlpatterns += patterns('',
     # redirect
@@ -36,10 +48,10 @@ urlpatterns += patterns('',
     (r'^admin/language/$', 'a2b_satchmo.customer.views.my_admin_language_view'),
     (r'^admin/card/$', 'a2b_satchmo.customer.views.my_admin_card_view'),
     (r'^admin/cdr/$', 'a2b_satchmo.customer.views.my_admin_cdr_view'),
-    (r'^admin/', include(admin.site.urls)),
-
-    (r'^api/', include('a2b_satchmo.api.urls')),
+    (r'^admin/', include(admin.site.urls)),    
+    (r'^api/', include('a2b_satchmo.api.urls')),    
 )
+
 
 urlpatterns += patterns('a2b_satchmo.customer.views',
     #(r'^$', 'index_view'),

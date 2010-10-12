@@ -1,4 +1,3 @@
-from django import *
 from django import forms
 from a2b_satchmo.customer.function_def import *
 from django.forms import ModelForm
@@ -6,7 +5,6 @@ from django.contrib import *
 from django.contrib.admin.widgets import *
 from uni_form.helpers import *
 from django.utils.translation import ugettext_lazy as _
-from django import forms
 #from django.shortcuts import render_to_response
 #from datetime import *
 
