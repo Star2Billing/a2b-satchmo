@@ -218,7 +218,9 @@
     
 		{% url satchmo_contact as contact_url %}
 	    {% if contact_url %}<p><a href="{{ contact_url }}">{% trans "Contact Us" %}</a></p>{% endif %}
-		
+
+        <p><a href="/make_call/">{% trans "Make Call" %}</a></p>
+
 		{% block sidebar-primary-bottom %}
 		{% plugin_point "shop_sidebar_primary" %}
 		{% endblock %}

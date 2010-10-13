@@ -153,8 +153,8 @@ INSTALLED_APPS = (
     'satchmo_store.contact',
 
     'tax',
-    'tax.modules.no',
-    'tax.modules.area',
+    #'tax.modules.no',
+    #'tax.modules.area',
     'tax.modules.percent',
     'tax.modules.us_sst',
     

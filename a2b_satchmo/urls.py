@@ -20,12 +20,11 @@ admin.autodiscover()
 
 product_list = Product.objects.filter(featured=True)
 
-replacement = url(r'^quick_order/$', 'satchmo_store.shop.views.cart.add_multiple',
-            {'products': product_list}, 'satchmo_quick_order')
+replacement = url(r'^quick_order/$', 'satchmo_store.shop.views.cart.add_multiple', {'products': product_list}, 'satchmo_quick_order')
 replace_urlpattern(urlpatterns, replacement)
 
-replacement = url(r'^tracking/(?P<order_id>\d+)/$', 'a2b_satchmo.localsite.views.order_tracking',{}, 'satchmo_order_tracking')
-replace_urlpattern(urlpatterns, replacement)
+#replacement = url(r'^tracking/(?P<order_id>\d+)/$', 'a2b_satchmo.localsite.views.order_tracking',{}, 'satchmo_order_tracking')
+#replace_urlpattern(urlpatterns, replacement)
 
 
 
@@ -35,8 +34,7 @@ urlpatterns += patterns('',
     # redirect
     #('^$', 'django.views.generic.simple.redirect_to', {'url': 'shop/'}),
     #(r'^/', include('a2b_satchmo.urls')),
-    (r'^resources/(?P<path>.*)$',  'django.views.static.serve',{ 'document_root': settings.MEDIA_ROOT } ),
-
+    (r'^resources/(?P<path>.*)$',  'django.views.static.serve',{ 'document_root': settings.MEDIA_ROOT } ),    
     url(r'^admin_tools/', include('admin_tools.urls')),
     (r'^grappelli/', include('grappelli.urls')),
 
@@ -65,6 +63,10 @@ urlpatterns += patterns('a2b_satchmo.customer.views',
     # Jqgrid
     url (r'^examplegrid/$', grid_handler, name='grid_handler'),
     url (r'^examplegrid/cfg/$', grid_config, name='grid_config'),
+)
+
+urlpatterns += patterns('a2b_satchmo.localsite.views',
+    url(r'^make_call/$', 'make_call',{},'make_call'),
 )
 
 

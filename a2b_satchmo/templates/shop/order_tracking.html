@@ -11,15 +11,7 @@
 {% block content %}
 <div id="ordertracking">
     <h3>{% trans "Order Tracking" %}</h3>
-    {% order_tracking_details order "true" default_view_tax %}
-
-
-    <form method="post" action=".">{% csrf_token %}
-    {{ form.as_table }}
-    <table>
-    <tr><td><input type="submit" name="submit" value="Submit" /></td></tr>
-    </table>
-    </form>
+    {% order_tracking_details order "true" default_view_tax %}   
 </div>
 {% endblock %}
 
