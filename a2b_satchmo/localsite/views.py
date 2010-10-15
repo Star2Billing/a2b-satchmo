@@ -1,13 +1,18 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render_to_response, get_object_or_404
+from django.template import RequestContext, loader, Context
+from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
-from satchmo_store.contact.models import Contact
 from django.contrib.sites.models import Site
+from django.utils.encoding import smart_str
+from django.views.decorators.cache import never_cache
+from satchmo_store.contact.models import Contact
 from satchmo_store.shop.models import Order, OrderItem, Config
 from satchmo_utils.views import bad_or_missing
-from livesettings import config_value
 from a2b_satchmo.localsite.forms import PostPaidForm
+from livesettings import config_value
+import os
+import urllib
 import operator
 
 ##To run python script
@@ -83,3 +88,27 @@ def invoice(request, order_id):
     return render_to_response('shop/invoice.html', context_instance=ctx)
 
 invoice = login_required(invoice)
+
+def invoice_print(request, id):
+    import trml2pdf
+    order = get_object_or_404(Order, pk=id)
+    shopDetails = Config.objects.get_current()
+    filename_prefix = shopDetails.site.domain
+    filename = "%s-invoice.pdf" % filename_prefix
+    template = "invoice.rml"
+
+    response = HttpResponse(mimetype='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename=%s' % filename
+    icon_uri = config_value('SHOP', 'LOGO_URI')
+    t = loader.get_template(os.path.join('shop/pdf', template))
+    c = Context({
+                'filename' : filename,
+                'iconURI' : icon_uri,
+                'shopDetails' : shopDetails,
+                'order' : order,
+                })
+    pdf = trml2pdf.parseString(smart_str(t.render(c)))
+    response.write(pdf)
+    return response
+
+invoice_print = login_required(never_cache(invoice_print))
