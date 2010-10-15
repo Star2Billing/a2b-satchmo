@@ -8,7 +8,6 @@ from django.utils.translation import ugettext_lazy as _
 #from django.shortcuts import render_to_response
 #from datetime import *
 
-
 class PostPaidForm(forms.Form):
-    no_of_use_service = forms.IntegerField(required=True, help_text=_("How many times have you used service?"))
+    dial_no = forms.IntegerField(required=True, help_text=_("Enter Destination Phone Number"))
     

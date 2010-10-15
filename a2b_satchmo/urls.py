@@ -67,6 +67,7 @@ urlpatterns += patterns('a2b_satchmo.customer.views',
 
 urlpatterns += patterns('a2b_satchmo.localsite.views',
     url(r'^make_call/$', 'make_call',{},'make_call'),
+    url(r'^invoice/(?P<order_id>\d+)/$', 'invoice',{},'invoice'),
 )
 
 

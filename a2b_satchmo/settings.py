@@ -167,11 +167,12 @@ INSTALLED_APPS = (
     'product.modules.subscription',
 
     'payment',
+    'payment.modules.dummy',
     'payment.modules.autosuccess',
     'payment.modules.cod',
     'payment.modules.purchaseorder',
     'payment.modules.paypal',
-    'payment.modules.authorizenet',
+    #'payment.modules.authorizenet',
     'payment.modules.google',
     'satchmo_ext',
     'satchmo_ext.recentlist',
@@ -200,6 +201,7 @@ INSTALLED_APPS = (
     'django_cron',
     #'staticfiles',
 )
+
 
 #ADMIN_TOOLS_MENU = 'a2b_satchmo.menu.CustomMenu'
 #ADMIN_TOOLS_INDEX_DASHBOARD = 'a2b_satchmo.dashboard.CustomIndexDashboard'

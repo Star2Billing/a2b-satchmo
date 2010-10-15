@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load thumbnail %}
+{% load satchmo_util %}
+{% load satchmo_currency %}
+{% load satchmo_order normalize_decimal %}
+
+{% block navbar %}
+   <li class="first"><a href="{{ shop_base }}/">{% trans "Home" %}</a></li>
+   <li><a href="{% url satchmo_account_info %}">{% trans "Account" %}</a></li>
+   <li>{% trans "Order History" %}</li>
+{% endblock %}
+
+{% block content %}
+
+
+{% trans "Welcome to the shop. " %}
+<br/>
+
+################################################
+<br/>
+{{ user_data.email }}<br/>
+################################################
+<br/>
+{% for order in orders %}
+<a href="{% url satchmo_order_tracking order.id %}">{{ order.id }}</a> | {{ order.status }} | {{ order.time_stamp|date:"F jS Y H:i" }}
+                |   {% for item in order.orderitem_set.all %}
+                    {% if not forloop.first %}<br/>{% endif %}
+                    {{ item.quantity|normalize_decimal }} | {{ item }}
+                    {% endfor %}
+                | {{order.total|currency}} <br/>
+{% endfor %}
+
+<br/>
+
+<form method="post" action=".">{% csrf_token %}
+{{ form.as_table }}
+<table>
+<tr><td><input type="submit" name="submit" value="Call" /></td></tr>
+</table>
+</form>
+
+{% endblock %}
+

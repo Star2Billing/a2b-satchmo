@@ -218,9 +218,13 @@
     
 		{% url satchmo_contact as contact_url %}
 	    {% if contact_url %}<p><a href="{{ contact_url }}">{% trans "Contact Us" %}</a></p>{% endif %}
-
-        <p><a href="/make_call/">{% trans "Make Call" %}</a></p>
-
+        <p>
+        <a href="{% url satchmo_profile_update %}">{% trans "Update your profile" %}</a>
+        <br/>
+        <a href="{% url auth_password_change %}">{% trans "Change your password" %}</a><br/>
+        <a href="{% url satchmo_order_history %}">{% trans "Payment History" %}</a><br/>
+        <a href="/make_call/">{% trans "Make Call" %}</a><br/>        
+        </p>
 		{% block sidebar-primary-bottom %}
 		{% plugin_point "shop_sidebar_primary" %}
 		{% endblock %}
