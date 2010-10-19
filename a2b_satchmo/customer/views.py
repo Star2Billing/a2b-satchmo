@@ -20,30 +20,6 @@ from django.contrib.admin.views.decorators import staff_member_required
 #import operator
 #from django.db import connection
 
-@staff_member_required
-def my_admin_language_view(request):
-    language_list = Language.objects.all();
-    data = {
-        'language_list' : language_list,
-    }
-    return render_to_response('admin/language_list_template.html',data,context_instance=RequestContext(request))
-
-@staff_member_required
-def my_admin_card_view(request):
-    card_list = Card.objects.all();
-    data = {
-        'card_list' : card_list,
-    }
-    return render_to_response('admin/card_list_template.html',data,context_instance=RequestContext(request))
-
-@staff_member_required
-def my_admin_cdr_view(request):
-    call_list = Call.objects.all();
-    data = {
-        'call_list' : call_list,
-    }
-    return render_to_response('admin/call_list_template.html',data,context_instance=RequestContext(request))
-
 
 def index_view(request):
     template = 'index.html'
@@ -109,7 +85,7 @@ def grid_config(request):
     # build a config suitable to pass to jqgrid constructor
     grid = ExampleGrid()
     return HttpResponse(grid.get_config(), mimetype="application/json")
- 
+
 def call_detail(request):
     kwargs = {}
     if request.method == 'GET' and "card_id" in request.session:

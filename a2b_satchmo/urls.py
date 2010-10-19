@@ -43,10 +43,11 @@ urlpatterns += patterns('',
 
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
-    (r'^admin/language/$', 'a2b_satchmo.customer.views.my_admin_language_view'),
-    (r'^admin/card/$', 'a2b_satchmo.customer.views.my_admin_card_view'),
-    (r'^admin/cdr/$', 'a2b_satchmo.customer.views.my_admin_cdr_view'),
-    (r'^admin/', include(admin.site.urls)),    
+    (r'^admin/language/$', 'a2b_satchmo.customer.admin_views.my_admin_language_view'),
+    (r'^admin/card/$', 'a2b_satchmo.customer.admin_views.my_admin_card_view'),
+    (r'^admin/cdr/$', 'a2b_satchmo.customer.admin_views.my_admin_cdr_view'),
+    
+    (r'^admin/', include(admin.site.urls)),
     (r'^api/', include('a2b_satchmo.api.urls')),    
 )
 

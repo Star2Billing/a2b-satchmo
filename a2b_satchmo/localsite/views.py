@@ -3,7 +3,6 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext, loader, Context
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.sites.models import Site
 from django.utils.encoding import smart_str
 from django.views.decorators.cache import never_cache
 from satchmo_store.contact.models import Contact
