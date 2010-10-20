@@ -43,3 +43,13 @@ call_type_list = ( (-1,'ALL CALLS'),
                    (3,'DID_VOIP'),
                    (4,'CALLBACK'),
                    (5,'PREDICT'), )
+
+call_terminate_status_list = ((0,'ALL'),
+                              (1,'ANSWERED'),
+                              (2,'NOT COMPLETED'),
+                              (3,'NOT ANSWERED'),
+                              (4,'BUSY'),
+                              (5,'CONGESTIONED'),
+                              (6,'CHANNEL UNAVAILABLE'),
+                              (7,'CANCELED')
+                             )

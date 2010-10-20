@@ -31,7 +31,7 @@ class SearchForm(forms.Form):
     phone_no = forms.CharField(label=u'PHONE NO :',widget=forms.TextInput(attrs={'size': 15}),required=False,)
     phone_no_type = forms.TypedChoiceField(coerce=bool,choices=((1, 'Exact'), (2, 'Begins with'), (3, 'Contains'), (4, 'Ends with')),widget=forms.RadioSelect,required=False,label=u'PHONE NO TYPE :',)
     call_type = forms.ChoiceField(label=u'CALL TYPE :',choices=call_type_list(),required=False,)
-    show = forms.TypedChoiceField(label=u'SHOW :',coerce=bool,choices=(('ANSWER', 'Answered Calls'), ('ALL', 'All Calls')),widget=forms.RadioSelect,required=False,)
+    show = forms.TypedChoiceField(label=u'SHOW :',coerce=bool,choices=dial_status_list(),required=False,)#,widget=forms.RadioSelect
     result = forms.TypedChoiceField(label=u'RESULT :',coerce=bool,choices=(('min', 'Minutes'), ('sec', 'Seconds')),widget=forms.RadioSelect,required=False,)
     currency  = forms.ChoiceField(label=u'CURRENCY :',choices=currency_list(),required=False,)
     
