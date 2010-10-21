@@ -59,29 +59,31 @@ class CardAdmin(admin.ModelAdmin):
 admin.site.register(Card, CardAdmin)
 
 class CallAdmin(admin.ModelAdmin):
-    list_display = ('starttime','card_id', 'src', 'calledstation',  'sessiontime', 'real_sessiontime','terminatecauseid','sipiax')
-    list_display_links = []
+    list_display = ('starttime','card_id', 'src', 'calledstation',  'sessiontime', 'real_sessiontime','terminatecauseid','sipiax')   
     list_filter = ['starttime', 'calledstation']
-    search_fields = ('card_id', 'dst', 'src','starttime',)
+    #search_fields = ('card_id', 'dst', 'src','starttime',)
     ordering = ('-id',)
     change_list_template = 'admin/customer/call/change_list.html'
-
+    
+    def __init__(self, *args, **kwargs):
+        super(CallAdmin, self).__init__(*args, **kwargs)
+        self.list_display_links = (None, )
+    
     def get_urls(self):
         urls = super(CallAdmin, self).get_urls()
         my_urls = patterns('',(r'^admin/customer/call/$', self.admin_site.admin_view(self.changelist_view)))
         return my_urls + urls    
-    
+        
     def queryset(self, request):
         kwargs = {}
-        if request.method == 'POST':            
-            kwargs = call_record_common_fun(request,form_require="no")            
-            #return super(CallAdmin, self).get_query_set().filter(**kwargs)
-            return Call.objects.select_related('prefix__destination', 'destination').filter(**kwargs).order_by('-starttime')
-        else:            
-            return Call.objects.all()
-        
-
-    def changelist_view(self, request, extra_context=None):        
+        kwargs = call_record_common_fun(request,form_require="no")
+        qs = super(CallAdmin, self).queryset(request)
+        if request.method == 'POST':
+            return qs.filter(**kwargs).order_by('-starttime')
+        else:
+            return qs.filter(**kwargs).order_by('-starttime')
+    
+    def changelist_view(self, request,  extra_context=None):        
         if request.method == 'POST':            
             form = call_record_common_fun(request,form_require="yes")                                               
         else:
@@ -90,7 +92,7 @@ class CallAdmin(admin.ModelAdmin):
             'form': form,            
             'has_add_permission': '',
         }
-        return super(CallAdmin, self).changelist_view(request, extra_context=ctx)
+        return super(CallAdmin, self).changelist_view(request,  extra_context=ctx)
 
 
 admin.site.register(Call, CallAdmin)

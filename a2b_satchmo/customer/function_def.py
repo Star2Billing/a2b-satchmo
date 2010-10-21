@@ -143,9 +143,9 @@ def call_record_common_fun(request, form_require="no"):
 
     phone_no = variable_value(request,'phone_no')
     phone_no_type = variable_value(request,'phone_no_type')
-
+    
     if "fromday_chk" in request.POST:
-        fromday_chk     = 'on'
+        fromday_chk     = 'on'        
         from_day        = int(request.POST['from_day'])
         from_month_year = request.POST['from_month_year']
         from_year       = int(request.POST['from_month_year'][0:4])
@@ -191,29 +191,29 @@ def call_record_common_fun(request, form_require="no"):
         return form
 
     else:
-        kwargs = {}
+        kwargs = {}        
         if fromday_chk == 'on' and today_chk == 'on':
             kwargs[ 'starttime__range' ] = (start_date, end_date)
         if fromday_chk == 'on' and today_chk != 'on' :
             kwargs[ 'starttime__gte' ] = start_date
         if today_chk == 'on' and fromday_chk != 'on':
             kwargs[ 'starttime__lte' ] = end_date
-            
+        
         for i in calledstation:
             kwargs[i] = calledstation[i]
-
+        
         if call_type != '' and call_type != '-1':
             calltype_list = call_type_list()
             for i in calltype_list:
                 if int(i[0]) == int(call_type) :
                     kwargs[ 'sipiax' ] = call_type
 
-        if show == '0':
-            dlist = dial_status_list()
-            kwargs[ 'terminatecauseid__in' ] = (l[0]  for l in dlist)
+        dlist = dial_status_list()        
+        if show == 0 or show == '':
+            kwargs[ 'terminatecauseid__in' ] = (l[0]  for l in dlist)        
         else:
-            kwargs[ 'terminatecauseid__exact' ] = show
-
+            kwargs[ 'terminatecauseid' ] = show
+        
         if len(kwargs) == 0:
             tday = datetime.today()
             kwargs[ 'starttime__gte' ] = datetime(tday.year, tday.month, tday.day)
