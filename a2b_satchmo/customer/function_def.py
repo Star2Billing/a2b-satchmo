@@ -208,12 +208,12 @@ def call_record_common_fun(request, form_require="no"):
                 if int(i[0]) == int(call_type) :
                     kwargs[ 'sipiax' ] = call_type
 
-        dlist = dial_status_list()        
-        if show == 0 or show == '':
+        dlist = dial_status_list()
+        if show == '0' or show == '':
             kwargs[ 'terminatecauseid__in' ] = (l[0]  for l in dlist)        
         else:
             kwargs[ 'terminatecauseid' ] = show
-        
+    
         if len(kwargs) == 0:
             tday = datetime.today()
             kwargs[ 'starttime__gte' ] = datetime(tday.year, tday.month, tday.day)

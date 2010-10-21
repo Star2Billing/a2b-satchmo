@@ -44,11 +44,3 @@ def my_admin_cdr_view(request):
         'call_list' : call_list,
     }
     return render_to_response('admin/call_list_template.html',data,context_instance=RequestContext(request))
-
-@staff_member_required
-def admin_call_detail(request):
-    print "shrenik"
-    data = {
-        'data' : '1',
-    }
-    return render_to_response('admin/customer/call/change_list.html',data,context_instance=RequestContext(request))

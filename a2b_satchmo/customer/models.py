@@ -164,7 +164,7 @@ class Trunk(Model):
         db_table = u'cc_trunk'
 
     def __unicode__(self):
-        return '[%s] %s' %(self.id_trunk, self.trunkcode)
+        return '%s' %(self.trunkcode)
 
 class Alarm(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -224,6 +224,9 @@ class Prefix(models.Model):
     destination = models.CharField(max_length=180)
     class Meta:
         db_table = u'cc_prefix'
+
+    def __unicode__(self):
+        return '%s' %(self.destination)
         
 class Call(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -231,36 +234,43 @@ class Call(models.Model):
     uniqueid = models.CharField(max_length=90)
     card_id = models.IntegerField()
     nasipaddress = models.CharField(max_length=90)
-    starttime = models.DateTimeField()
+    starttime = models.DateTimeField(verbose_name='Date')
     stoptime = models.DateTimeField()
     sessiontime = models.IntegerField(null=True, blank=True)
-    calledstation = models.CharField(max_length=90)
+    calledstation = models.CharField(max_length=90,verbose_name='Phone Number')
     sessionbill = models.FloatField(null=True, blank=True)
     id_tariffgroup = models.IntegerField(null=True, blank=True)
     id_tariffplan = models.IntegerField(null=True, blank=True)
-    id_ratecard = models.IntegerField(null=True, blank=True)
-    id_trunk = models.IntegerField(null=True, blank=True)
+    id_ratecard = models.IntegerField(null=True, blank=True)    
     sipiax = models.IntegerField(null=True, blank=True, choices=call_type_list,verbose_name='Call Type')
-    src = models.CharField(max_length=120)
+    src = models.CharField(max_length=120,verbose_name='CallerID')
     id_did = models.IntegerField(null=True, blank=True)
     buycost = models.DecimalField(null=True, max_digits=17, decimal_places=5, blank=True)
     id_card_package_offer = models.IntegerField(null=True, blank=True)
     real_sessiontime = models.IntegerField(null=True, blank=True)
-    dnid = models.CharField(max_length=120)
+    dnid = models.CharField(max_length=120,verbose_name='DNID')
     terminatecauseid = models.IntegerField(null=True, blank=True,choices=call_terminate_status_list, verbose_name='TC')
     #destination = models.IntegerField(null=True, blank=True,db_column ="destination")
     destination = models.ForeignKey(Prefix, db_column ="destination", null=True, blank=True)
+    id_trunk = models.ForeignKey(Trunk, db_column="id_trunk",null=True, blank=True)
 
     def destination_name(self):
-        """
-        Get the full destination name
-        """
-
         if self.destination is None:
-            return ""
+            return "-"
         else:
             return self.destination.destination
+        
+    def duration(self):        
+        min = int(self.real_sessiontime / 60)
+        sec = int(self.real_sessiontime % 60)
+        return "%02d" % min + ":" + "%02d" % sec
 
+    def buy(self):
+        return " %.3f " % self.buycost
+
+    def call_charge(self):
+        return " %.3f " % self.sessionbill
+    
     class Meta:
         db_table = u'cc_call'
 

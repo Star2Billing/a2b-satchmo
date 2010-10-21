@@ -59,9 +59,10 @@ class CardAdmin(admin.ModelAdmin):
 admin.site.register(Card, CardAdmin)
 
 class CallAdmin(admin.ModelAdmin):
-    list_display = ('starttime','card_id', 'src', 'calledstation',  'sessiontime', 'real_sessiontime','terminatecauseid','sipiax')   
-    list_filter = ['starttime', 'calledstation']
+    list_display = ('starttime','src','dnid','calledstation','destination_name' ,'card_id','id_trunk','buy','call_charge','duration','terminatecauseid','sipiax')
+    #list_filter = ['starttime', 'calledstation']
     #search_fields = ('card_id', 'dst', 'src','starttime',)
+    date_hierarchy = ('starttime')
     ordering = ('-id',)
     change_list_template = 'admin/customer/call/change_list.html'
     
@@ -78,15 +79,13 @@ class CallAdmin(admin.ModelAdmin):
         kwargs = {}
         kwargs = call_record_common_fun(request,form_require="no")
         qs = super(CallAdmin, self).queryset(request)
-        if request.method == 'POST':
-            return qs.filter(**kwargs).order_by('-starttime')
-        else:
-            return qs.filter(**kwargs).order_by('-starttime')
+        return qs.select_related('prefix__destination', 'destination').filter(**kwargs).order_by('-starttime')
     
     def changelist_view(self, request,  extra_context=None):        
         if request.method == 'POST':            
             form = call_record_common_fun(request,form_require="yes")                                               
         else:
+            #result = 'min'
             form = SearchForm(initial={'currency': config_value('base_currency').upper(),'phone_no_type':1,'show':0,'result':'min'})                
         ctx = {
             'form': form,            
