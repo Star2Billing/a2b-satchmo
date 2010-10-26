@@ -214,7 +214,7 @@ def call_record_common_fun(request, form_require="no"):
         else:
             kwargs[ 'terminatecauseid' ] = show
     
-        if len(kwargs) == 0:
+        if len(kwargs) == 0 or request.method == 'GET':
             tday = datetime.today()
             kwargs[ 'starttime__gte' ] = datetime(tday.year, tday.month, tday.day)
             

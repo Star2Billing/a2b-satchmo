@@ -49,21 +49,24 @@ class CardAdmin(admin.ModelAdmin):
         }),
     )
     
-    list_display = ('id', 'username', 'useralias','lastname','id_group','ba','tariff','status','language')
-    list_display_links = ('id', 'username',)    
+    list_display = ('id', 'username', 'useralias','lastname','id_group','ba','tariff','status','language')    
     search_fields = ('useralias', 'username')
     ordering = ('id',)
     list_filter = ['status','id_group','language']
     readonly_fields = ('username','credit','firstusedate')
+    
+    def __init__(self, *args, **kwargs):
+        super(CardAdmin, self).__init__(*args, **kwargs)
+        self.list_display_links = ('username', )
 
 admin.site.register(Card, CardAdmin)
 
 class CallAdmin(admin.ModelAdmin):
     list_display = ('starttime','src','dnid','calledstation','destination_name' ,'card_id','id_trunk','buy','call_charge','duration','terminatecauseid','sipiax')
-    #list_filter = ['starttime', 'calledstation']
+    list_filter = ['starttime', 'calledstation']
     #search_fields = ('card_id', 'dst', 'src','starttime',)
     date_hierarchy = ('starttime')
-    ordering = ('-id',)
+    ordering = ('-id',)    
     change_list_template = 'admin/customer/call/change_list.html'
     
     def __init__(self, *args, **kwargs):
@@ -77,7 +80,7 @@ class CallAdmin(admin.ModelAdmin):
         
     def queryset(self, request):
         kwargs = {}
-        kwargs = call_record_common_fun(request,form_require="no")
+        kwargs = call_record_common_fun(request,form_require="no")        
         qs = super(CallAdmin, self).queryset(request)
         return qs.select_related('prefix__destination', 'destination').filter(**kwargs).order_by('-starttime')
     
@@ -96,8 +99,21 @@ class CallAdmin(admin.ModelAdmin):
 
 admin.site.register(Call, CallAdmin)
 
+# Config
+class ConfigAdmin(admin.ModelAdmin):
+    fieldsets = (
+        (None, {
 
+            'fields': ('config_group_title','config_title','config_key','config_value','config_description',),            
+        }),
+    )    
+    list_display = ('config_title','config_key','config_value','config_description','config_group_title',)
+    search_fields = ('config_title', 'config_key',)
+    readonly_fields = ('config_title','config_key','config_description',)    
+    list_filter = ['config_group_title']
+    ordering = ('config_group_title',)    
 
+admin.site.register(Config, ConfigAdmin)
 
 class OrderExtend:
     def order_sku(self):
