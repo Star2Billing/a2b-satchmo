@@ -12,7 +12,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from a2b_satchmo.customer.constants import *
 from django.utils.translation import ugettext_lazy as _
 #from django.forms import ModelForm
-
+from django.forms import ModelForm, Textarea, TextInput
 
 #
 class Model(models.Model):
@@ -720,7 +720,7 @@ class CcCharge(models.Model):
 class ConfigGroup(models.Model):
     id = models.IntegerField()#primary_key=True
     group_title = models.CharField(max_length=192,primary_key=True)#unique=True,
-    group_description = models.CharField(max_length=765)
+    group_description = models.TextField(max_length=765)
 
     def __unicode__(self):
         return '%s' %(self.group_title)
@@ -730,22 +730,23 @@ class ConfigGroup(models.Model):
         
 class Config(models.Model):
     id = models.IntegerField(primary_key=True)
-    config_title = models.CharField(max_length=300, blank=True,help_text=_("Title of the configuration variable."))
-    config_key = models.CharField(max_length=300, blank=True, help_text=_("Key name of the configuration variable."))
-    config_value = models.CharField(max_length=600, blank=True,help_text=_("Insert the Value."))
+    config_title = models.CharField(max_length=300, blank=True,)
+    config_key = models.CharField(max_length=300,  blank=True, )
+    config_value = models.CharField(max_length=600, blank=True,)
     config_description = models.TextField()
     config_valuetype = models.IntegerField()
     config_listvalues = models.CharField(max_length=300, blank=True)
     #config_group_title = models.CharField(max_length=192,help_text=_("Group Name of the configuration variable."))
     config_group_title = models.ForeignKey(ConfigGroup,db_column='config_group_title',null=True, blank=True)
-
+    
     class Meta:
         db_table = u'cc_config'
         verbose_name_plural = "Configuration"
 
+    def save(self, *args, **kwargs):        
+        super(Config, self).save(*args, **kwargs) 
 
-
-
+        
 class CcConfiguration(models.Model):
     configuration_id = models.IntegerField(primary_key=True)
     configuration_title = models.CharField(max_length=192,)

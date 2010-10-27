@@ -20,6 +20,23 @@ class CardForm(ModelForm):
         model = Card
         fields = ['lastname', 'firstname', 'address','city','state','country','zipcode','id_timezone','phone','fax']
 
+#Default ModelForm of Config Model is override 
+class ConfigForm(ModelForm):
+    config_title  = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}),required=False,help_text=_("Title of the configuration variable."))
+    config_key = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}),required=False,help_text=_("Key name of the configuration variable."))
+    config_value = forms.CharField(help_text=_("Insert the Value."),required=True,error_messages={'required': 'Please enter Config Value'}, )
+    config_description = forms.CharField(widget=forms.Textarea(attrs={'readonly':'readonly'}),required=False,)
+    
+    class Meta:
+        model = Config
+        fields = ['config_group_title', 'config_title','config_key','config_value','config_description',]
+    """
+    def clean_config_value(self):
+        config_value = self.cleaned_data["config_value"]
+        if config_value == '':
+            raise forms.ValidationError('Plase enter the Config Value !!')
+        return config_value
+    """
 
 class SearchForm(forms.Form):
     fromday_chk = forms.BooleanField(label=u'FROM :',required=False,)

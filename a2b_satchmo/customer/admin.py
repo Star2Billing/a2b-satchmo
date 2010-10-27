@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.forms import ModelForm, Textarea, TextInput
 from a2b_satchmo.customer.forms import *
 from a2b_satchmo.customer.models import *
 from a2b_satchmo.customer.function_def import *
@@ -99,19 +100,37 @@ class CallAdmin(admin.ModelAdmin):
 
 admin.site.register(Call, CallAdmin)
 
-# Config
-class ConfigAdmin(admin.ModelAdmin):
+#Config Group List
+class ConfigGroupAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
 
-            'fields': ('config_group_title','config_title','config_key','config_value','config_description',),            
+            'fields': ('group_title','group_description'),
+        }),
+    )
+    list_display = ('group_title','group_description')
+    search_fields = ('group_title', 'group_description')    
+    ordering = ('id',)
+
+admin.site.register(ConfigGroup, ConfigGroupAdmin)
+
+#Admin side Config Model
+class ConfigAdmin(admin.ModelAdmin):
+    fieldsets = (
+        (None, {
+            'fields': ('config_group_title','config_title','config_key','config_value','config_description',),
         }),
     )    
+    form = ConfigForm    
     list_display = ('config_title','config_key','config_value','config_description','config_group_title',)
-    search_fields = ('config_title', 'config_key',)
-    readonly_fields = ('config_title','config_key','config_description',)    
+    search_fields = ('config_title', 'config_key','config_description')
+    #readonly_fields = ('config_title','config_key','config_description',)
     list_filter = ['config_group_title']
-    ordering = ('config_group_title',)    
+    ordering = ('config_group_title',)
+    #formfield_overrides = {
+    #    models.CharField: {'widget': TextInput(attrs={'readonly':'readonly',})},
+    #    models.TextField: {'widget': Textarea(attrs={'readonly':'readonly',})},
+    #}
 
 admin.site.register(Config, ConfigAdmin)
 
