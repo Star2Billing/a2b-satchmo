@@ -416,7 +416,7 @@ class Card(models.Model):
     def ba(self):
         return  u"%.3f %s " % (self.credit,self.currency)
     ba.short_description = 'B.A.'
-
+    
     class Meta:
         db_table = u'cc_card'
         verbose_name_plural = "Customer"

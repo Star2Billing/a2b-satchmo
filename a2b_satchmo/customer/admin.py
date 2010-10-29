@@ -50,15 +50,35 @@ class CardAdmin(admin.ModelAdmin):
         }),
     )
     
-    list_display = ('id', 'username', 'useralias','lastname','id_group','ba','tariff','status','language')    
+    list_display = ('id', 'username', 'useralias','lastname','id_group','ba','tariff','status','language','action')
     search_fields = ('useralias', 'username')
     ordering = ('id',)
     list_filter = ['status','id_group','language']
-    readonly_fields = ('username','credit','firstusedate')
+    readonly_fields = ('username','credit','firstusedate')    
     
     def __init__(self, *args, **kwargs):
         super(CardAdmin, self).__init__(*args, **kwargs)
         self.list_display_links = ('username', )
+    """
+    def my_view(self,request):
+        cxt = {
+            'app_label': '',
+        }
+        #return super(CardAdmin, self).my_view(request, card_id)
+        return render_to_response('admin/view/detail_view.html' , cxt, RequestContext(request))
+    
+    def get_urls(self):
+        urls = super(CardAdmin, self).get_urls()
+        my_urls = patterns('',url(r'^admin/view/$', self.admin_site.admin_view(self.my_view)),
+        #(r'^admin/view/(?P<card_id>\d+)/$', 'a2b_satchmo.customer.admin_views.card_view_detail'),
+        )
+        return my_urls + urls        
+    """
+    def action(self,form):
+        opts = self.model._meta
+        app_label = opts.app_label
+        return '<a href=\"/admin/%s/view/%d/\">view</a>' % (opts.object_name.lower(),form.id)
+    action.allow_tags = True
 
 admin.site.register(Card, CardAdmin)
 
@@ -68,7 +88,7 @@ class CallAdmin(admin.ModelAdmin):
     #search_fields = ('card_id', 'dst', 'src','starttime',)
     date_hierarchy = ('starttime')
     ordering = ('-id',)    
-    change_list_template = 'admin/customer/call/change_list.html'
+    change_list_template = 'admin/customer/call/change_list.html'    
     
     def __init__(self, *args, **kwargs):
         super(CallAdmin, self).__init__(*args, **kwargs)
@@ -76,8 +96,9 @@ class CallAdmin(admin.ModelAdmin):
     
     def get_urls(self):
         urls = super(CallAdmin, self).get_urls()
-        my_urls = patterns('',(r'^admin/customer/call/$', self.admin_site.admin_view(self.changelist_view)))
-        return my_urls + urls    
+        my_urls = patterns('',(r'^admin/customer/call/$', self.admin_site.admin_view(self.changelist_view)),                             
+        )        
+        return my_urls + urls
         
     def queryset(self, request):
         kwargs = {}
@@ -96,8 +117,6 @@ class CallAdmin(admin.ModelAdmin):
             'has_add_permission': '',
         }
         return super(CallAdmin, self).changelist_view(request,  extra_context=ctx)
-
-
 admin.site.register(Call, CallAdmin)
 
 #Config Group List
