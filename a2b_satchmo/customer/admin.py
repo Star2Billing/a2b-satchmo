@@ -1,14 +1,21 @@
 from django.contrib import admin
 from django.forms import ModelForm, Textarea, TextInput
+from django.views.decorators.cache import never_cache
+from django.conf.urls.defaults import *
+from django.core.urlresolvers import reverse
+from django.shortcuts import redirect,render_to_response
+from django.utils.translation import ugettext_lazy as _
+from django.forms.models import model_to_dict
+from django.template import RequestContext
+from django.http import  Http404, HttpResponseRedirect
+#from django.contrib.sites.models import Site
+#from django.contrib.admin.views.main import ChangeList
 from a2b_satchmo.customer.forms import *
 from a2b_satchmo.customer.models import *
 from a2b_satchmo.customer.function_def import *
-#from django.contrib.sites.models import Site
-#from django.contrib.admin.views.main import ChangeList
 from satchmo_store.shop.models import Order, OrderItem
 from satchmo_store.shop.admin import OrderOptions
-from django.views.decorators.cache import never_cache
-from django.conf.urls.defaults import *
+
 from datetime import *
 
 # Language
@@ -59,25 +66,34 @@ class CardAdmin(admin.ModelAdmin):
     def __init__(self, *args, **kwargs):
         super(CardAdmin, self).__init__(*args, **kwargs)
         self.list_display_links = ('username', )
-    """
-    def my_view(self,request):
-        cxt = {
-            'app_label': '',
-        }
-        #return super(CardAdmin, self).my_view(request, card_id)
-        return render_to_response('admin/view/detail_view.html' , cxt, RequestContext(request))
     
     def get_urls(self):
         urls = super(CardAdmin, self).get_urls()
-        my_urls = patterns('',url(r'^admin/view/$', self.admin_site.admin_view(self.my_view)),
-        #(r'^admin/view/(?P<card_id>\d+)/$', 'a2b_satchmo.customer.admin_views.card_view_detail'),
+        my_urls = patterns('',
+            (r'^view/(?P<id>\d+)$', self.admin_site.admin_view(self.card_detail))
         )
-        return my_urls + urls        
-    """
-    def action(self,form):
-        opts = self.model._meta
+        return my_urls + urls
+
+    def card_detail(self,request, id):
+        card = model_to_dict(Card.objects.get(pk=id),exclude=('email_notification', 'loginkey'))
+        opts = Card._meta
         app_label = opts.app_label
-        return '<a href=\"/admin/%s/view/%d/\">view</a>' % (opts.object_name.lower(),form.id)
+        card_detail_view_template = 'admin/customer/card/detail_view.html'
+        cxt = {
+            'title': _('View %s') % force_unicode(opts.verbose_name),
+            'has_change_permission':'yes',
+            'opts': opts,
+            'model_name': opts.object_name.lower(),
+            'app_label': app_label,
+            'card':card,
+        }        
+        return render_to_response(card_detail_view_template , cxt, context_instance=RequestContext(request))
+        
+    def action(self,form):
+        #opts = self.model._meta
+        #app_label = opts.app_label
+        #return '<a href=\"/admin/%s/view/%d/\" target="_blank">view</a>' % (opts.object_name.lower(),form.id)
+        return '<a href="view/%s" >view</a>' % (form.id)
     action.allow_tags = True
 
 admin.site.register(Card, CardAdmin)

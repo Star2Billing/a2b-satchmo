@@ -40,23 +40,6 @@ def my_admin_card_view(request):
     return render_to_response('admin/card_list_template.html',data,context_instance=RequestContext(request))
 
 @staff_member_required
-def card_view_detail(request,card_id):    
-    #card = Card.objects.get(pk=card_id)
-    card = model_to_dict(Card.objects.get(pk=card_id),exclude=('email_notification', 'loginkey'))
-    opts = Card._meta
-    app_label = opts.app_label    
-    card_detail_view_template = 'admin/customer/card/detail_view.html'
-    cxt = {
-        'title': _('View %s') % force_unicode(opts.verbose_name),
-        'has_change_permission':'yes',        
-        'opts': opts,
-        'model_name': opts.object_name.lower(),
-        'app_label': app_label,
-        'card':card,        
-    }
-    return render_to_response(card_detail_view_template , cxt, context_instance=RequestContext(request))
-
-@staff_member_required
 def my_admin_cdr_view(request):
     call_list = Call.objects.all();
     data = {
