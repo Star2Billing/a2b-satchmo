@@ -16,17 +16,17 @@
 {% block breadcrumbs %}{% if not is_popup %}
 <div class="breadcrumbs">
      <a href="../../../">{% trans "Home" %}</a> &rsaquo;
-     <a href="/admin/customer/">{{ app_label|capfirst|escape }}</a> &rsaquo;
+     <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
      {% if has_change_permission %}<a href="/admin/{{ opts.app_label }}/{{ model_name }}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %} &rsaquo;
-     {% if add %}{% trans "Add" %} {{ opts.verbose_name }}{% else %}{{ original|truncatewords:"18" }}{% endif %}
+     {% if add %}{% trans "Add" %} {{ opts.verbose_name }}{% else %}{{ original|truncatewords:"18" }}{% endif %}{{ card.id }}
 </div>
 {% endif %}{% endblock %}
 
 {% block content %}<div id="content-main">
 <table width=50%>
-{% for field_name, value in card.items %}
+{% for field,value in card.items %}
         <tr>
-            <td>{{ field_name }}</td>
+            <td>{{ field }}</td>            
             <td>{{ value }}</td>
         </tr>
 {% endfor %}

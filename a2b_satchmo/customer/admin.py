@@ -1,4 +1,5 @@
 from django.contrib import admin
+#from django.contrib import databrowse
 from django.forms import ModelForm, Textarea, TextInput
 from django.views.decorators.cache import never_cache
 from django.conf.urls.defaults import *
@@ -78,7 +79,7 @@ class CardAdmin(admin.ModelAdmin):
         card = model_to_dict(Card.objects.get(pk=id),exclude=('email_notification', 'loginkey'))
         opts = Card._meta
         app_label = opts.app_label
-        card_detail_view_template = 'admin/customer/card/detail_view.html'
+        card_detail_view_template = 'admin/customer/card/detail_view.html'       
         cxt = {
             'title': _('View %s') % force_unicode(opts.verbose_name),
             'has_change_permission':'yes',
@@ -97,9 +98,10 @@ class CardAdmin(admin.ModelAdmin):
     action.allow_tags = True
 
 admin.site.register(Card, CardAdmin)
+#databrowse.site.register(Card)
 
 class CallAdmin(admin.ModelAdmin):
-    list_display = ('starttime','src','dnid','calledstation','destination_name' ,'card_id','id_trunk','buy','call_charge','duration','terminatecauseid','sipiax')
+    list_display = ('starttime','src','dnid','calledstation','destination_name' ,'card_id_link','id_trunk','buy','call_charge','duration','terminatecauseid','sipiax')
     list_filter = ['starttime', 'calledstation']
     #search_fields = ('card_id', 'dst', 'src','starttime',)
     date_hierarchy = ('starttime')
@@ -108,7 +110,7 @@ class CallAdmin(admin.ModelAdmin):
     
     def __init__(self, *args, **kwargs):
         super(CallAdmin, self).__init__(*args, **kwargs)
-        self.list_display_links = (None, )
+        self.list_display_links = (None, )    
     
     def get_urls(self):
         urls = super(CallAdmin, self).get_urls()
@@ -135,18 +137,18 @@ class CallAdmin(admin.ModelAdmin):
         return super(CallAdmin, self).changelist_view(request,  extra_context=ctx)
 admin.site.register(Call, CallAdmin)
 
+
+
 #Config Group List
 class ConfigGroupAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
-
             'fields': ('group_title','group_description'),
         }),
     )
-    list_display = ('group_title','group_description')
+    list_display = ('group_title','group_description')    
     search_fields = ('group_title', 'group_description')    
     ordering = ('id',)
-
 admin.site.register(ConfigGroup, ConfigGroupAdmin)
 
 #Admin side Config Model
@@ -161,7 +163,7 @@ class ConfigAdmin(admin.ModelAdmin):
     search_fields = ('config_title', 'config_key','config_description')
     #readonly_fields = ('config_title','config_key','config_description',)
     list_filter = ['config_group_title']
-    ordering = ('config_group_title',)
+    ordering = ('config_group_title',)        
     #formfield_overrides = {
     #    models.CharField: {'widget': TextInput(attrs={'readonly':'readonly',})},
     #    models.TextField: {'widget': Textarea(attrs={'readonly':'readonly',})},

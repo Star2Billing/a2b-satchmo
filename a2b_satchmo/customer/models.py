@@ -419,7 +419,8 @@ class Card(models.Model):
     
     class Meta:
         db_table = u'cc_card'
-        verbose_name_plural = "Customer"
+        verbose_name = _("Cust")
+        verbose_name_plural = _("Customer")
 
 
 class Prefix(models.Model):
@@ -457,6 +458,10 @@ class Call(models.Model):
     id_trunk = models.ForeignKey(Trunk, db_column="id_trunk",null=True, blank=True)
     #card_id = models.IntegerField()
     card_id = models.ForeignKey(Card,db_column="card_id",null=True, blank=True)
+
+    def card_id_link(self):
+        return '<a href="../card/%s">%s</a>' % (self.card_id,self.card_id)
+    card_id_link.allow_tags = True
 
     def destination_name(self):
         if self.destination is None:
@@ -727,6 +732,7 @@ class ConfigGroup(models.Model):
 
     class Meta:
         db_table = u'cc_config_group'
+        verbose_name_plural = "Group List"
         
 class Config(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -737,16 +743,12 @@ class Config(models.Model):
     config_valuetype = models.IntegerField()
     config_listvalues = models.CharField(max_length=300, blank=True)
     #config_group_title = models.CharField(max_length=192,help_text=_("Group Name of the configuration variable."))
-    config_group_title = models.ForeignKey(ConfigGroup,db_column='config_group_title',null=True, blank=True)
+    config_group_title = models.ForeignKey(ConfigGroup,db_column='config_group_title',related_name='+',null=True, blank=True)
     
     class Meta:
         db_table = u'cc_config'
-        verbose_name_plural = "Configuration"
+        verbose_name_plural = "Global List"        
 
-    def save(self, *args, **kwargs):        
-        super(Config, self).save(*args, **kwargs) 
-
-        
 class CcConfiguration(models.Model):
     configuration_id = models.IntegerField(primary_key=True)
     configuration_title = models.CharField(max_length=192,)

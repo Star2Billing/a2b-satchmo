@@ -143,6 +143,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sitemaps',
     'django.contrib.sites',
+    #'django.contrib.databrowse',
     
     'registration',
     'sorl.thumbnail',

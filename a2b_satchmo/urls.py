@@ -5,6 +5,7 @@ from a2b_satchmo.customer.models import Language
 
 from django.conf import settings
 from django.conf.urls.defaults import *
+#from django.contrib import databrowse
 
 #from django.contrib.billing.urls import urlpatterns as billingpattern
 from satchmo_store.urls import urlpatterns 
@@ -37,7 +38,7 @@ urlpatterns += patterns('',
     (r'^resources/(?P<path>.*)$',  'django.views.static.serve',{ 'document_root': settings.MEDIA_ROOT } ),    
     url(r'^admin_tools/', include('admin_tools.urls')),
     (r'^grappelli/', include('grappelli.urls')),
-
+    #(r'^databrowse/(.*)', databrowse.site.root),
     #To set the correct paypal notify_url
     (r'^checkout_ipn_process/', include('paypal.standard.ipn.urls')),
 
