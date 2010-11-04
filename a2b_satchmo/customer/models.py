@@ -141,20 +141,30 @@ class AgentTariffgroup(models.Model):
     class Meta:
         db_table = u'cc_agent_tariffgroup'
 
+class Provider(models.Model):
+    provider_name = models.CharField(unique=True, max_length=90)
+    creationdate = models.DateTimeField(auto_now_add=True)
+    description = models.TextField(blank=True)
+    class Meta:
+        db_table = u'cc_provider'
+    def __unicode__(self):
+        return '[%s] %s' %(self.id, self.provider_name)
+
 class Trunk(Model):
-    id_trunk = models.IntegerField(primary_key=True)
+    #id_trunk = models.IntegerField(primary_key=True)
+    id_trunk = models.AutoField('ID', primary_key=True)
     trunkcode = models.CharField(max_length=150, blank=True)
     trunkprefix = models.CharField(max_length=60, blank=True)
-    providertech = models.CharField(max_length=60)
-    providerip = models.CharField(max_length=240)
+    providertech = models.CharField(max_length=60, blank=True)
+    providerip = models.CharField(max_length=240, blank=True)
     removeprefix = models.CharField(max_length=60, blank=True)
     secondusedreal = models.IntegerField(null=True, blank=True)
     secondusedcarrier = models.IntegerField(null=True, blank=True)
     secondusedratecard = models.IntegerField(null=True, blank=True)
-    creationdate = models.DateTimeField()
+    creationdate = models.DateTimeField(auto_now_add=True)
     failover_trunk = models.IntegerField(null=True, blank=True)
     addparameter = models.CharField(max_length=360, blank=True)
-    id_provider = models.IntegerField(null=True, blank=True)
+    id_provider = models.ForeignKey(Provider, db_column ="id_trunk", null=True, blank=True)
     inuse = models.IntegerField(null=True, blank=True)
     maxuse = models.IntegerField(null=True, blank=True)
     status = models.IntegerField(null=True, blank=True)
@@ -1181,16 +1191,6 @@ class CcPhonenumber(models.Model):
     amount = models.IntegerField()
     class Meta:
         db_table = u'cc_phonenumber'
-
-
-
-class CcProvider(models.Model):
-    id = models.IntegerField(primary_key=True)
-    provider_name = models.CharField(unique=True, max_length=90)
-    creationdate = models.DateTimeField()
-    description = models.TextField(blank=True)
-    class Meta:
-        db_table = u'cc_provider'
 
 class CcRatecard(models.Model):
     id = models.IntegerField(primary_key=True)

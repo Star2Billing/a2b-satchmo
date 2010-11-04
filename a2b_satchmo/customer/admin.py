@@ -30,15 +30,28 @@ class LanguageAdmin(admin.ModelAdmin):
 admin.site.register(Language, LanguageAdmin)
 
 
+class ProviderAdmin(admin.ModelAdmin):
+    list_display = ('id', 'provider_name')
+    list_display_links = ('provider_name', ) 
+
+admin.site.register(Provider, ProviderAdmin)
+
+
 class TrunkAdmin(admin.ModelAdmin):
-    list_display = ('id_trunk', 'trunkcode', 'trunkprefix','providertech','providerip')
+    fieldsets = (
+        (None, {
+            'fields': ('trunkcode', 'trunkprefix', 'providertech', 'id_provider')
+        }),
+    )
+    list_display = ('id_trunk', 'trunkcode', 'trunkprefix','providertech','providerip', 'id_provider')
+    
     list_display_links = ('id_trunk', 'trunkcode',) 
 
 admin.site.register(Trunk, TrunkAdmin)
 
 
 class AlarmAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'periode','type')
+    list_display = ('id', 'name', 'periode','type', 'id_trunk')
     list_display_links = ('id', 'name',) 
 
 admin.site.register(Alarm, AlarmAdmin)
