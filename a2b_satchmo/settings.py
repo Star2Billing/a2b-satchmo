@@ -1,5 +1,6 @@
 # Django settings for mysite project.
 import os
+
 #DIRNAME = os.path.dirname(__file__)
 DIRNAME = os.path.abspath(os.path.dirname(__file__))
 
@@ -82,18 +83,20 @@ TEMPLATE_LOADERS = (
 
 
 MIDDLEWARE_CLASSES = (
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',    
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.csrf.CsrfResponseMiddleware',
     "django.middleware.doc.XViewMiddleware",
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
     #"threaded_multihost.middleware.ThreadLocalMiddleware",
     "satchmo_store.shop.SSLMiddleware.SSLRedirect",
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'pagination.middleware.PaginationMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
+    
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -131,13 +134,17 @@ INSTALLED_APPS = (
 
     #'grappelli',
     
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.sites',
-    
-    'django.contrib.sites',
     'satchmo_store.shop',
+    
+    'django.contrib.auth',    
+    'django.contrib.contenttypes',
+    'django.contrib.comments',
+    'django.contrib.flatpages',    
+    'django.contrib.sessions',
+    'django.contrib.sitemaps',
+    'django.contrib.sites',
+    #'django.contrib.databrowse',
+    
     'registration',
     'sorl.thumbnail',
     'keyedcache',
@@ -145,23 +152,35 @@ INSTALLED_APPS = (
     'l10n',
     #'satchmo_utils.thumbnail',
     'satchmo_store.contact',
+
     'tax',
     #'tax.modules.no',
     #'tax.modules.area',
-    #'tax.modules.percent',
+    'tax.modules.percent',
+    'tax.modules.us_sst',
+    
     'shipping',
     'shipping.modules.no',
+
     'product',
     'product.modules.configurable',
     'product.modules.custom',
+    'product.modules.subscription',
 
     'payment',
     'payment.modules.dummy',
+    'payment.modules.autosuccess',
+    'payment.modules.cod',
     'payment.modules.purchaseorder',
     'payment.modules.paypal',
-    'payment.modules.authorizenet',
+    #'payment.modules.authorizenet',
     'payment.modules.google',
-    'satchmo_ext.satchmo_toolbar',
+    'satchmo_ext',
+    'satchmo_ext.recentlist',
+    #'satchmo_ext.satchmo_toolbar',
+    'satchmo_ext.newsletter',
+    #'satchmo_ext.newsletter.simple',
+    #'satchmo_ext.newsletter.mailman',
     'satchmo_utils',
     'app_plugins',
     'a2b_satchmo.localsite',
@@ -180,7 +199,10 @@ INSTALLED_APPS = (
     #'paypal.standard.ipn', 
     'a2b_satchmo.api',
     'django_extensions',
+    'django_cron',
+    #'staticfiles',
 )
+
 
 #ADMIN_TOOLS_MENU = 'a2b_satchmo.menu.CustomMenu'
 #ADMIN_TOOLS_INDEX_DASHBOARD = 'a2b_satchmo.dashboard.CustomIndexDashboard'
@@ -189,12 +211,28 @@ INSTALLED_APPS = (
 
 PAYPAL_RECEIVER_EMAIL = "yourpaypalemail@example.com"
 
+
+LANGUAGES = (
+    ('en', 'English'),
+    ('fr', 'French'),
+    ('es', 'Spanish'),
+    ('br', 'Brazilian'),
+)
+
+L10N_SETTINGS = {
+
+}
+
+
+
 #### Satchmo unique variables ####
-#from django.conf.urls.defaults import patterns, include
+from django.conf.urls.defaults import patterns, include
 SATCHMO_SETTINGS = {
     'SHOP_BASE' : '',
     'MULTISHOP' : False,
     #'SHOP_URLS' : patterns('satchmo_store.shop.views',)
+    'SHOP_URLS' : patterns('', (r'^i18n/', include('l10n.urls')),)
+
 }
 
 AUTHENTICATION_BACKENDS = (
@@ -204,13 +242,6 @@ AUTHENTICATION_BACKENDS = (
 
 
 gettext = lambda s: s
-
-LANGUAGES = (
-    ('en', gettext('English')),
-    ('fr', gettext('French')),  
-    ('es', gettext('Spanish')),  
-    ('br', gettext('Brazilian')),
-)
 
 
 try :

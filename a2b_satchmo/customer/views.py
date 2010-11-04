@@ -20,30 +20,6 @@ from django.contrib.admin.views.decorators import staff_member_required
 #import operator
 #from django.db import connection
 
-@staff_member_required
-def my_admin_language_view(request):
-    language_list = Language.objects.all();
-    data = {
-        'language_list' : language_list,
-    }
-    return render_to_response('admin/language_list_template.html',data,context_instance=RequestContext(request))
-
-@staff_member_required
-def my_admin_card_view(request):
-    card_list = Card.objects.all();
-    data = {
-        'card_list' : card_list,
-    }
-    return render_to_response('admin/card_list_template.html',data,context_instance=RequestContext(request))
-
-@staff_member_required
-def my_admin_cdr_view(request):
-    call_list = Call.objects.all();
-    data = {
-        'call_list' : call_list,
-    }
-    return render_to_response('admin/call_list_template.html',data,context_instance=RequestContext(request))
-
 
 def index_view(request):
     template = 'index.html'
@@ -109,7 +85,7 @@ def grid_config(request):
     # build a config suitable to pass to jqgrid constructor
     grid = ExampleGrid()
     return HttpResponse(grid.get_config(), mimetype="application/json")
- 
+
 def call_detail(request):
     kwargs = {}
     if request.method == 'GET' and "card_id" in request.session:
@@ -174,11 +150,11 @@ def call_detail(request):
                 if int(i[0]) == int(call_type) :
                     kwargs[ 'sipiax' ] = call_type
              
-        if show == 'ANSWER':
-            kwargs[ 'terminatecauseid__exact' ] = '1'
-        if show == 'ALL':
-            list = dial_status_list()
-            kwargs[ 'terminatecauseid__in' ] = (l[0]  for l in list)
+        if show == '0':
+            dlist = dial_status_list()
+            kwargs[ 'terminatecauseid__in' ] = (l[0]  for l in dlist)
+        else:
+            kwargs[ 'terminatecauseid__exact' ] = show
 
         form = SearchForm(initial={'fromday_chk':fromday_chk,'from_day':from_day,'from_month_year':from_month_year,'today_chk':today_chk,'to_day':to_day,'to_month_year':to_month_year,'phone_no':phone_no,'phone_no_type':phone_no_type,'call_type':call_type,'currency':currency,'show':show,'result':result})
 

@@ -16,23 +16,28 @@ DIRNAME = os.path.dirname(os.path.abspath(__file__))
 # for most "normal" projects, you should directly set the SATCHMO_DIRNAME, and skip the trick
 _parent = lambda x: os.path.normpath(os.path.join(x, '..'))
 SATCHMO_DIRNAME = _parent(_parent(DIRNAME))
-    
+
 # since we don't have any custom media for this project, lets just use Satchmo's
 MEDIA_ROOT = os.path.join(DIRNAME, 'resources/')
 
 gettext_noop = lambda s:s
 
 LANGUAGE_CODE = 'en-us'
+
 LANGUAGES = (
-   ('en', gettext_noop('English')),
+   ('en', 'English'),
+   ('fr', "Français"),
+   ('de', "Deutsch"),
 )
 
+
+DJANGO_PROJECT = 'a2b_satchmo'
+DJANGO_SETTINGS_MODULE = 'a2b_satchmo.settings'
 # Only set these if Satchmo is part of another Django project
 #These are used when loading the test data
 SITE_NAME = "a2b_satchmo"
 MEDIA_ROOT = os.path.join(DIRNAME, 'resources/')
-DJANGO_PROJECT = 'a2b_satchmo'
-DJANGO_SETTINGS_MODULE = 'a2b_satchmo.settings'
+
 
 # "simple" doesn't have any custom templates, usually you'd have one here for your site.
 TEMPLATE_DIRS = (
@@ -53,7 +58,7 @@ SECRET_KEY = 'EXAMPLE SECRET KEY'
 
 #These are used when loading the test data
 SITE_DOMAIN = "127.0.0.1"
-SITE_NAME = "Simple Satchmo"
+SITE_NAME = "A2B Satchmo"
 
 # not suitable for deployment, for testing only, for deployment strongly consider memcached.
 CACHE_BACKEND = "locmem:///"

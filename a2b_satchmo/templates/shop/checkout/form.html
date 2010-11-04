@@ -5,13 +5,13 @@
 {% include "contact/_contact_info_form.html" %}
 {% endblock %}
 
-
-
-{% block content %}
 {% block navbar %}
    <li class="first"><a href="{{ shop_base }}/">{% trans "Home" %}</a></li>
    <li>{% trans "Checkout" %}</li>
 {% endblock %}
+
+{% block content %}
+
 <h3>{% trans "Checkout" %}</h3>
 <div id="checkoutprogress">
 <ul>

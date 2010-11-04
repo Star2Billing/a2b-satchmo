@@ -1,4 +1,3 @@
-from django import *
 from django import forms
 from a2b_satchmo.customer.function_def import *
 from django.forms import ModelForm
@@ -6,10 +5,8 @@ from django.contrib import *
 from django.contrib.admin.widgets import *
 from uni_form.helpers import *
 from django.utils.translation import ugettext_lazy as _
-from django import forms
 #from django.shortcuts import render_to_response
 #from datetime import *
-
 
 class LoginForm(forms.Form):
 	username = forms.CharField(max_length=100,required=True,)
@@ -23,6 +20,23 @@ class CardForm(ModelForm):
         model = Card
         fields = ['lastname', 'firstname', 'address','city','state','country','zipcode','id_timezone','phone','fax']
 
+#Default ModelForm of Config Model is override 
+class ConfigForm(ModelForm):
+    config_title  = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}),required=False,help_text=_("Title of the configuration variable."))
+    config_key = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}),required=False,help_text=_("Key name of the configuration variable."))
+    config_value = forms.CharField(help_text=_("Insert the Value."),required=True,error_messages={'required': 'Please enter Config Value'}, )
+    config_description = forms.CharField(widget=forms.Textarea(attrs={'readonly':'readonly'}),required=False,)
+    
+    class Meta:
+        model = Config
+        fields = ['config_group_title', 'config_title','config_key','config_value','config_description',]
+    """
+    def clean_config_value(self):
+        config_value = self.cleaned_data["config_value"]
+        if config_value == '':
+            raise forms.ValidationError('Plase enter the Config Value !!')
+        return config_value
+    """
 
 class SearchForm(forms.Form):
     fromday_chk = forms.BooleanField(label=u'FROM :',required=False,)
@@ -34,7 +48,7 @@ class SearchForm(forms.Form):
     phone_no = forms.CharField(label=u'PHONE NO :',widget=forms.TextInput(attrs={'size': 15}),required=False,)
     phone_no_type = forms.TypedChoiceField(coerce=bool,choices=((1, 'Exact'), (2, 'Begins with'), (3, 'Contains'), (4, 'Ends with')),widget=forms.RadioSelect,required=False,label=u'PHONE NO TYPE :',)
     call_type = forms.ChoiceField(label=u'CALL TYPE :',choices=call_type_list(),required=False,)
-    show = forms.TypedChoiceField(label=u'SHOW :',coerce=bool,choices=(('ANSWER', 'Answered Calls'), ('ALL', 'All Calls')),widget=forms.RadioSelect,required=False,)
+    show = forms.TypedChoiceField(label=u'SHOW :',coerce=bool,choices=dial_status_list(),required=False,)#,widget=forms.RadioSelect
     result = forms.TypedChoiceField(label=u'RESULT :',coerce=bool,choices=(('min', 'Minutes'), ('sec', 'Seconds')),widget=forms.RadioSelect,required=False,)
     currency  = forms.ChoiceField(label=u'CURRENCY :',choices=currency_list(),required=False,)
     

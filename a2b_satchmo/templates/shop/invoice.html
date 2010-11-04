@@ -1,0 +1,126 @@
+{% extends "shop/base.html" %}
+{% load i18n satchmo_order satchmo_currency %}
+
+{% block navbar %}
+   <li class="first"><a href="{{ shop_base }}/">{% trans "Home" %}</a></li>
+   <li><a href="{% url satchmo_account_info %}">{% trans "Account" %}</a></li>
+   <li>{% trans "Invoice Detail" %}</li>
+{% endblock %}
+
+{% block content %}
+<div id="ordertracking">
+    <h3>{% trans "Invoice Detail" %}</h3>
+</div>
+<p><a href="/print/{{ order.id }}" target="_blank">Print</a></p>
+<table width=100%>
+<tr>
+    <td colspan=2>INVOICE</td>
+    <td>COMPANY</td>
+</tr>
+<tr>   
+    <td valign=top>{% trans "Billing Address" %}<br/>
+        {{order.bill_addressee}}<br/>
+        {{order.bill_street1}}<br/>
+        {% if order.bill_street2 %}
+        {{order.bill_street2}}<br/>
+        {% endif %}
+        {{order.bill_city}}, {{order.bill_state}}<br/>
+        {{order.bill_postal_code}}<br/>
+        {% trans "Phone" %}: {{order.contact.primary_phone.phone}}<br/>
+        {% trans "Email" %}: {{order.contact.email}}
+    </td>
+    <td valign=top>{% trans "Shipping Address" %}<br/>
+        {{order.ship_addressee}}<br/>
+        {{order.ship_street1}}<br/>
+        {% if order.ship_street2 %}
+        {{order.ship_street2}}<br/>
+        {% endif %}
+        {{order.ship_city}}, {{order.ship_state}}<br/>
+        {{order.ship_postal_code}}
+    </td>
+    <td valign=top>{{shopDetails.street1}}<br/>
+        {% if shopDetails.street2 %}
+        {{shopDetails.street2}}<br/>
+        {% endif %}
+        {{shopDetails.city}}, {{shopDetails.state}} {{shopDetails.postal_code}}<br/>
+        {{shopDetails.phone}}<br/>
+        {{shopDetails.store_email}}
+    </td>
+</tr>
+</table>
+<table width=100%>
+    <tr>
+        <td>{% trans "Description" %}</td>
+        <td>{% trans "Quantity" %}</td>
+        <td>{% trans "Unit Price" %}</td>
+        <td>{% trans "Discount" %}</td>
+        <td>{% trans "Total" %}</td>
+    </tr>
+    {% for item in order.orderitem_set.all %}
+    <tr>
+        <td><para>{{ item.product.name|fix_ampersands }}</para></td>
+        <td>{{ item.quantity }} </td>
+        <td>{{ item.unit_price|currency }}</td>
+        <td>{{ item.discount|currency }}</td>
+        <td>{{ item.sub_total|currency }} </td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <td colspan=3></td>
+        <td>{% trans "Subtotal" %}:</td><td>{{order.sub_total|currency}}</td>
+    </tr>
+    <tr>
+        <td colspan=3></td>
+        <td>{% trans "Tax" %}:</td><td>{{order.tax|currency}}</td>
+    </tr><tr>
+        <td colspan=3></td>
+        <td>{% trans "Total" %}:</td><td>{{order.total|currency}}</td>
+    </tr>
+    <tr>
+	<td colspan=3></td>
+	<td>{% trans "Payments Made" %}</td><td>- {{ order.balance_paid|currency }}</td>
+    </tr>
+    <tr>
+	<td colspan=3></td>
+        <td>{% trans "Balance Due" %}</td><td>{{ order.balance|currency }}</td>
+    </tr>
+    <tr>
+        <td colspan=5>
+            {% if order.balance %}
+        <p>
+            {% with order.total|currency as order_total %}
+            {% blocktrans %}Payment total {{order_total}} due to:{% endblocktrans %}
+            {% endwith %}
+        </p>
+        <p>
+            {% trans "Accounts Receivable" %}<br/>
+            {{shopDetails.street1}}<br/>
+            {% if shopDetails.street2 %}                
+                {{shopDetails.street2}}<br/>
+            {% endif %}        
+            {{shopDetails.city}} {{shopDetails.state}}, {{shopDetails.postal_code}}<br/>
+        </p>
+        {% else %}
+                {% if order.credit_card %}
+                    {% with order.total|currency as order_total %}
+                    {% with order.credit_card.credit_type as credit_card_type %}
+                    {% with order.credit_card.display_cc as credit_card_number %}
+                    <p>
+                        {% blocktrans with order.time_stamp|date:"F j, Y" as order_date %}
+                            {{ order_total }} was charged to your {{ credit_card_type }} card (x{{ credit_card_number }}) on {{ order_date }}.
+                        {% endblocktrans %}
+                    </p>
+                {% endwith %}{% endwith %}{% endwith %}
+                {% endif %}
+                <p>
+                    {% blocktrans %}
+                    This invoice has been paid in full. Thank you for your business!
+                    {% endblocktrans %}
+                </p>
+        {% endif %}
+        </td>
+    </tr>
+</table>
+
+       
+{% endblock %}

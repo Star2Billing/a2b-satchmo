@@ -1,7 +1,23 @@
 from django.contrib import admin
-from a2b_satchmo.customer.models import *
+#from django.contrib import databrowse
+from django.forms import ModelForm, Textarea, TextInput
+from django.views.decorators.cache import never_cache
+from django.conf.urls.defaults import *
+from django.core.urlresolvers import reverse
+from django.shortcuts import redirect,render_to_response
+from django.utils.translation import ugettext_lazy as _
+from django.forms.models import model_to_dict
+from django.template import RequestContext
+from django.http import  Http404, HttpResponseRedirect
 #from django.contrib.sites.models import Site
 #from django.contrib.admin.views.main import ChangeList
+from a2b_satchmo.customer.forms import *
+from a2b_satchmo.customer.models import *
+from a2b_satchmo.customer.function_def import *
+from satchmo_store.shop.models import Order, OrderItem
+from satchmo_store.shop.admin import OrderOptions
+
+from datetime import *
 
 # Language
 class LanguageAdmin(admin.ModelAdmin):
@@ -9,24 +25,7 @@ class LanguageAdmin(admin.ModelAdmin):
     list_display_links = ('name',)
     #list_editable = ('code','charset')
     list_filter = ['charset']
-    """
-    def changelist_view(self, request, extra_context=None, **kwargs):
-        cl = ChangeList(request, self.model, list(self.list_display),
-                        self.list_display_links, self.list_filter,
-                        self.date_hierarchy, self.search_fields,
-                        self.list_select_related, self.list_per_page,
-                        self.list_editable, self)
-        cl.formset = None
-        if extra_context is None:
-            extra_context = {}
-        if kwargs.get('only_tagged'):
-            tag = kwargs.get('tag')
-            cl.result_list = cl.result_list.filter(tags__icontains=tag)
-            extra_context['extra_filter'] = "Only tagged %s" % tag
-
-        extra_context['cl'] = cl
-        return super(LanguageAdmin, self).changelist_view(request, extra_context=extra_context)
-      """
+    
 admin.site.register(Language, LanguageAdmin)
 
 
@@ -72,27 +71,136 @@ class CardAdmin(admin.ModelAdmin):
         }),
     )
     
-    list_display = ('id', 'username', 'useralias','lastname','id_group','ba','tariff','status','language')
-    list_display_links = ('id', 'username',)    
+    list_display = ('id', 'username', 'useralias','lastname','id_group','ba','tariff','status','language','action')
     search_fields = ('useralias', 'username')
     ordering = ('id',)
     list_filter = ['status','id_group','language']
-    readonly_fields = ('username','credit','firstusedate')
+    readonly_fields = ('username','credit','firstusedate')    
+    
+    def __init__(self, *args, **kwargs):
+        super(CardAdmin, self).__init__(*args, **kwargs)
+        self.list_display_links = ('username', )
+    
+    def get_urls(self):
+        urls = super(CardAdmin, self).get_urls()
+        my_urls = patterns('',
+            (r'^view/(?P<id>\d+)$', self.admin_site.admin_view(self.card_detail))
+        )
+        return my_urls + urls
+
+    def card_detail(self,request, id):
+        card = model_to_dict(Card.objects.get(pk=id),exclude=('email_notification', 'loginkey'))
+        opts = Card._meta
+        app_label = opts.app_label
+        card_detail_view_template = 'admin/customer/card/detail_view.html'       
+        cxt = {
+            'title': _('View %s') % force_unicode(opts.verbose_name),
+            'has_change_permission':'yes',
+            'opts': opts,
+            'model_name': opts.object_name.lower(),
+            'app_label': app_label,
+            'card':card,
+        }        
+        return render_to_response(card_detail_view_template , cxt, context_instance=RequestContext(request))
+        
+    def action(self,form):
+        #opts = self.model._meta
+        #app_label = opts.app_label
+        #return '<a href=\"/admin/%s/view/%d/\" target="_blank">view</a>' % (opts.object_name.lower(),form.id)
+        return '<a href="view/%s" >view</a>' % (form.id)
+    action.allow_tags = True
 
 admin.site.register(Card, CardAdmin)
+#databrowse.site.register(Card)
 
 class CallAdmin(admin.ModelAdmin):
-    list_display = ('starttime','card_id', 'src', 'calledstation',  'sessiontime', 'real_sessiontime','terminatecauseid')
-    list_display_links = []
+    list_display = ('starttime','src','dnid','calledstation','destination_name' ,'card_id_link','id_trunk','buy','call_charge','duration','terminatecauseid','sipiax')
     list_filter = ['starttime', 'calledstation']
-    search_fields = ('card_id', 'dst', 'src','starttime',)
-    ordering = ('-id',)
+    #search_fields = ('card_id', 'dst', 'src','starttime',)
+    date_hierarchy = ('starttime')
+    ordering = ('-id',)    
+    change_list_template = 'admin/customer/call/change_list.html'    
     
     def __init__(self, *args, **kwargs):
         super(CallAdmin, self).__init__(*args, **kwargs)
-        self.list_display_links = []
-
+        self.list_display_links = (None, )    
     
-
-
+    def get_urls(self):
+        urls = super(CallAdmin, self).get_urls()
+        my_urls = patterns('',(r'^admin/customer/call/$', self.admin_site.admin_view(self.changelist_view)),                             
+        )        
+        return my_urls + urls
+        
+    def queryset(self, request):
+        kwargs = {}
+        kwargs = call_record_common_fun(request,form_require="no")        
+        qs = super(CallAdmin, self).queryset(request)
+        return qs.select_related('prefix__destination', 'destination').filter(**kwargs).order_by('-starttime')
+    
+    def changelist_view(self, request,  extra_context=None):        
+        if request.method == 'POST':            
+            form = call_record_common_fun(request,form_require="yes")                                               
+        else:
+            #result = 'min'
+            form = SearchForm(initial={'currency': config_value('base_currency').upper(),'phone_no_type':1,'show':0,'result':'min'})                
+        ctx = {
+            'form': form,            
+            'has_add_permission': '',
+        }
+        return super(CallAdmin, self).changelist_view(request,  extra_context=ctx)
 admin.site.register(Call, CallAdmin)
+
+
+
+#Config Group List
+class ConfigGroupAdmin(admin.ModelAdmin):
+    fieldsets = (
+        (None, {
+            'fields': ('group_title','group_description'),
+        }),
+    )
+    list_display = ('group_title','group_description')    
+    search_fields = ('group_title', 'group_description')    
+    ordering = ('id',)
+admin.site.register(ConfigGroup, ConfigGroupAdmin)
+
+#Admin side Config Model
+class ConfigAdmin(admin.ModelAdmin):
+    fieldsets = (
+        (None, {
+            'fields': ('config_group_title','config_title','config_key','config_value','config_description',),
+        }),
+    )    
+    form = ConfigForm    
+    list_display = ('config_title','config_key','config_value','config_description','config_group_title',)
+    search_fields = ('config_title', 'config_key','config_description')
+    #readonly_fields = ('config_title','config_key','config_description',)
+    list_filter = ['config_group_title']
+    ordering = ('config_group_title',)        
+    #formfield_overrides = {
+    #    models.CharField: {'widget': TextInput(attrs={'readonly':'readonly',})},
+    #    models.TextField: {'widget': Textarea(attrs={'readonly':'readonly',})},
+    #}
+
+admin.site.register(Config, ConfigAdmin)
+
+class OrderExtend:
+    def order_sku(self):
+        allsku = ''
+        for item in self.orderitem_set.all():
+            allsku += "%s<br />" % item.product.sku
+        return allsku
+    order_sku.allow_tags = True
+    order_sku.short_description = "Order SKUs"
+
+Order.__bases__ += (OrderExtend,)
+
+admin.site.unregister(Order)
+
+class CustomOrderAdmin(OrderOptions):
+    list_display = ('id', 'order_sku', 'contact', 'time_stamp',
+                    'order_total', 'balance_forward', 'status',
+                    'invoice', 'packingslip')
+
+admin.site.register(Order, CustomOrderAdmin)
+

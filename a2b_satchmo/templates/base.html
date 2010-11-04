@@ -1,10 +1,12 @@
+{% load i18n satchmo_category satchmo_google satchmo_util satchmo_currency satchmo_discounts app_plugins normalize_decimal %}
+{% load shop_extras %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-  <title>{% block title %}{% endblock %}</title>
-
+  <title>{% block title %}{{ shop_name }}{% if pagetitle %}: {{ pagetitle }}{% endif %}{% endblock %}</title>
+  {% plugin_point "page_head" %}
   <!-- bluetrip css -->
     <link rel="stylesheet" href="{{MEDIA_URL}}/css/blueprint/screen.css" type="text/css" media="screen, projection" />
     <link rel="stylesheet" href="{{MEDIA_URL}}/css/blueprint/print.css" type="text/css" media="print" />
@@ -43,26 +45,29 @@
     <!-- Custom css -->
     <link type="text/css" media="screen" href="{{MEDIA_URL}}/css/a2b_satchmo.css" rel="stylesheet"/>
 
+    <!-- Satchmo css -->
+    <link type="text/css" media="screen" href="{{MEDIA_URL}}/css/style.css" rel="stylesheet"/>
+
     {% include "uni-form_header.html" %}
 
     {% include "uni-form_header_custom.html" %}
-
+  
   {% block external %}{% endblock %}
 </head>
 
-<body>
-
+<body{% if bodyid %} id="{{ bodyid }}"{% endif %}{% if bodyclass %} class="{{ bodyclass }}"{% endif %}>
+{% plugin_point "page_top" %}
 {% block head %} {% endblock %}
 
 
 
 <div class="container">
-
+	   	
 <div class="span-20">
 		<a href="http://www.cdr-stats.org/" target="_blank"><img class="logo_cdrstat" src="{{MEDIA_URL}}/logo/a2b-logo.png" border="0" height="118"/></a>
 </div>
 
-<div class="span-24 last">
+<div class="span-25 last">
 		<hr>
 </div>
 
@@ -77,14 +82,162 @@
        <a href="../profile/" class="fg-button ui-state-default ui-corner-all">Profile</a>&nbsp;
        <a href="../cdr/" class="fg-button ui-state-default ui-corner-all">Call Record</a>&nbsp;
        <a href="../logout" class="fg-button ui-state-default ui-corner-all">logout</a>
-      {% endif %}
+      {% endif %}      
     </div>
 </div>
 <br/><br/>
 
-<div class="span-24 last">
-{% block content %}{% endblock %}
+{% if user.is_authenticated %}
+<div class="span-25 last">
+<div id="navbar">
+<ul>
+{% block navbar %}{% endblock %}
+</ul>
 </div>
+</div>
+{% endif %}
+
+
+
+<div class="span-25 last">
+   
+	<div class="span-5 last">
+	{% if user.is_authenticated %}
+    	{% block sidebar-secondary %}
+		<div>
+			{% satchmo_search_form %}
+		</div>
+		<div>
+		{% block sidebar %}
+		<h3>{% trans "Shop Categories" %}</h3>
+			{% block sidebar-categories %}
+			<div id="menu_container">
+		        {% if category.id %}
+		            {% category_tree category.id %}
+		        {% else %}
+		            {% if product.get_category %}
+		                {% category_tree product.get_category.id %}
+		            {% else %}
+		                {% category_tree %}
+		            {% endif %}
+		        {% endif %}
+			</div>
+			{% endblock sidebar-categories %}
+			
+			{% block sidebar-secondary-bottom %}
+			{% plugin_point "sidebar_secondary_bottom" %}
+			{% endblock %}
+			{% endblock sidebar %}
+		</div>
+		{% endblock sidebar-secondary %}
+	</div>
+    {% endif %}
+	</div>
+
+
+<div class="span-16 last">
+
+{% if user.is_authenticated or request.path == "/accounts/register/" or request.path == "/accounts/register/complete/" or request.path == "/accounts/password_reset/"  or request.path == "/accounts/password_reset/done/" %}
+  
+    {% block content %}{% endblock %}
+    
+{% else %}
+
+    {% if form.non_field_errors %}
+    <h2>{% trans "Please correct the following error:" %}</h2>
+    {{ form.non_field_errors }}
+    {% endif %}
+    
+    <form method="post" action="{% if is_secure %}{% url auth_secure_login %}{% else %}{{ login_url }}{% endif %}">{% csrf_token %}
+    <input type="hidden" name="next" {% if next %}    value={{ next }} /> {% else %}
+     {% url satchmo_account_info as accounturl %}
+     {% if accounturl %} value="{% url satchmo_account_info %}" /> {% endif %}
+    {% endif %}
+    <table>
+            <tr>
+                <td colspan="2">
+                   <!-- {% trans "If you already have an account, you can login now !!" %}-->
+                </td>
+            </tr>
+            <tr><td><label for="id_username">{% trans "Username or email" %}:</label></td><td><input type="text" id="id_username" class="vTextField required" name="username" size="15" value="" maxlength="75" /></td></tr>
+            <tr><td><label for="id_password">{% trans "Password" %}:</label></td><td><input type="password" id="id_password" class="vPasswordField required" name="password" size="15" value="" maxlength="30" /></td></tr>
+            <tr><td>&nbsp;</td><td><input type="submit" value="{% trans "Login" %}" /></td></tr>
+    </table>
+    </form>
+    {% url registration_register as registration_register %}
+    {% url auth_password_reset as auth_password_reset %}
+    {% if registration_register %}
+        <p>{% trans "If you do not have an account, please" %} <a href="{% url registration_register %}">{% trans "click here" %}</a>.</p>
+    {% endif %}
+    {% if auth_password_reset %}
+        <p>{% trans "If you do not remember your password, please" %} <a href="{% url auth_password_reset %}">{% trans "click here</a> to have it reset." %}</p>
+    {% endif %}
+    
+{% endif %}
+
+</div>
+
+
+	  <div class="span-3 last">
+      {% if user.is_authenticated %}
+		<div id="sidebar-primary">{# rightnav #}
+		{% block sidebar-primary %}
+		<h3>{% trans "Quick Links" %}</h3>
+		{% url satchmo_product_recently_added as recenturl %}
+		{% if recenturl %}<a href="{{ recenturl }}">{% trans "Recently Added" %}</a>{% endif %}
+		{% url satchmo_product_best_selling as popularurl %}
+		{% if popularurl %}<br/><a href="{{ popularurl }}">{% trans "Best Sellers" %}</a><br/>{% endif %}
+        {% url satchmo_category_index as category_index %}
+        {% if category_index %} <a href="{{ category_index }}">{% trans "Category Index" %}</a><br /> {% endif %}
+        {% url satchmo_quick_order as quick_order %}
+        {% if quick_order %}<a href="{{ quick_order }}">{% trans "Quick Order" %}</a> {% endif %}
+		{% plugin_point "sidebar_links" %}
+
+	    <h3>{% trans "Account Information" %}</h3>
+	    {% if user.is_staff %}
+		<a href="{% url admin:index %}" target="blank">{% trans "Admin" %}</a><br/>
+		{% endif %}
+	    {% if user.is_authenticated %}
+		{% url satchmo_account_info as accounturl %}
+        {% if accounturl %}<a href="{{ accounturl }}" target="blank">{% trans "Account Details" %}</a><br/>{% endif %}
+        <a href="{{ logout_url }}?next={{request.path}}">{% trans "Log out" %}</a><br/>
+	    {% else %}
+        <a href="{{ login_url }}?next={{request.path}}">{% trans "Log in" %}</a><br/>
+	    {% endif %}
+
+		{% url satchmo_cart as carturl %}
+	    {% if carturl %}<a href="{{ carturl }}">{% trans "Cart" %}</a>{% endif %}
+
+	    {% if not cart.is_empty %}
+            ({{ cart_count|normalize_decimal }} - {% if sale %}{{ cart|discount_cart_total:sale|currency }}{% else %}{{ cart.total|currency }}{% endif%}) <br/>
+            {% url satchmo_checkout-step1 as checkouturl %}
+            {% if checkouturl %}<a href="{{ checkouturl }}">{% trans "Check out" %}</a>{% endif %}
+	    {% endif %}
+	
+		{% plugin_point "shop_sidebar_actions" %}
+    
+		{% url satchmo_contact as contact_url %}
+	    {% if contact_url %}<p><a href="{{ contact_url }}">{% trans "Contact Us" %}</a></p>{% endif %}
+        <p>
+        <a href="{% url satchmo_profile_update %}">{% trans "Update your profile" %}</a>
+        <br/>
+        <a href="{% url auth_password_change %}">{% trans "Change your password" %}</a><br/>
+        <a href="{% url satchmo_order_history %}">{% trans "Payment History" %}</a><br/>
+        <a href="/make_call/">{% trans "Make Call" %}</a><br/>        
+        </p>
+		{% block sidebar-primary-bottom %}
+		{% plugin_point "shop_sidebar_primary" %}
+		{% endblock %}
+		{% endblock sidebar-primary %}
+	</div>
+	
+		</div>
+        {% endif %}
+
+</div>
+
+
+{% footer_links %}
 
 </div>
 
