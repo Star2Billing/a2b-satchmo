@@ -111,3 +111,7 @@ def invoice_print(request, id):
     return response
 
 invoice_print = login_required(never_cache(invoice_print))
+
+def shop_terms(request):
+    ctx = RequestContext(request, {})
+    return render_to_response('shop-terms.html',context_instance=ctx)

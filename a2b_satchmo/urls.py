@@ -11,7 +11,6 @@ from django.conf.urls.defaults import *
 from satchmo_store.urls import urlpatterns 
 from satchmo_utils.urlhelper import replace_urlpattern
 from product.models import Product
-
 import django_cron
 django_cron.autodiscover()
 
@@ -26,8 +25,6 @@ replace_urlpattern(urlpatterns, replacement)
 
 #replacement = url(r'^tracking/(?P<order_id>\d+)/$', 'a2b_satchmo.localsite.views.order_tracking',{}, 'satchmo_order_tracking')
 #replace_urlpattern(urlpatterns, replacement)
-
-
 
 #urlpatterns += billingpattern
 
@@ -48,7 +45,7 @@ urlpatterns += patterns('',
     (r'^admin/card/$', 'a2b_satchmo.customer.admin_views.my_admin_card_view'),
     (r'^admin/cdr/$', 'a2b_satchmo.customer.admin_views.my_admin_cdr_view'),
     (r'^admin/', include(admin.site.urls)),
-    (r'^api/', include('a2b_satchmo.api.urls')),    
+    (r'^api/', include('a2b_satchmo.api.urls')),
 )
 
 
@@ -63,13 +60,14 @@ urlpatterns += patterns('a2b_satchmo.customer.views',
     (r'^checkout_process/$', 'checkout_process'),
     # Jqgrid
     url (r'^examplegrid/$', grid_handler, name='grid_handler'),
-    url (r'^examplegrid/cfg/$', grid_config, name='grid_config'),
+    url (r'^examplegrid/cfg/$', grid_config, name='grid_config'),   
 )
 
 urlpatterns += patterns('a2b_satchmo.localsite.views',
     url(r'^make_call/$', 'make_call',{},'make_call'),
     url(r'^invoice/(?P<order_id>\d+)/$', 'invoice',{},'invoice'),
     url(r'^print/(?P<id>\d+)', 'invoice_print', {}, 'invoice_print'),
+    #url(r'^accounts/register/$', 'register',{}, "register"),
 )
 
 

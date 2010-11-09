@@ -125,7 +125,6 @@ DEBUG_TOOLBAR_CONFIG = {
     'HIDE_DJANGO_SQL': False,
 }
 
-
 INSTALLED_APPS = (
     #'admin_tools',
     #'admin_tools.theming',
@@ -149,7 +148,7 @@ INSTALLED_APPS = (
     'sorl.thumbnail',
     'keyedcache',
     'livesettings',
-    'l10n',
+    'l10n',    
     #'satchmo_utils.thumbnail',
     'satchmo_store.contact',
 

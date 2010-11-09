@@ -1,0 +1,59 @@
+{% extends "shop/base.html" %}
+{% load i18n %}
+
+{% block navbar %}
+   <li class="first"><a href="{{ shop_base }}/">{% trans "Home" %}</a></li>
+   <li><a href="{% url satchmo_account_info %}">{% trans "Account" %}</a></li>
+   <li>{% trans "Update Profile" %}</li>
+{% endblock %}
+
+{% block extra-head %}
+{% include "contact/_contact_info_form.html" %}
+{% endblock %}
+
+{% block content %}
+<h4>{% trans "Your Profile" %}</h4>
+{% if form.non_field_errors %}
+<h2>{% trans "Please correct the following error:" %}</h2>
+{{ form.non_field_errors }}
+{% endif %}
+<form method="post" action="{% url satchmo_profile_update %}">
+{{ form.next }}
+<table>
+    <tr><td colspan="2"><p>{% trans "You&apos;ll need to fill out at least the fields with a *" %}</p></td></tr>
+
+	<tr><td colspan="2"><h4>{% trans "Basic Information" %}</h4></td></tr>
+    <tr><td><label for="id_email">{% trans "Email address" %}{% if form.email.field.required %}*{% endif %}</label></td> <td>{{ form.email }}</td></tr>
+    {% if form.email.errors %}<tr><td>&nbsp;</td><td>*** {{ form.email.errors|join:", " }}</td></tr>{% endif %}
+
+    <tr><td><label for="id_first_name">{% trans "First name" %}{% if form.first_name.field.required %}*{% endif %}</label></td><td> {{ form.first_name }}</td></tr>
+   {% if form.first_name.errors %}<tr><td>&nbsp;</td><td>*** {{ form.first_name.errors|join:", " }}</td></tr>{% endif %}
+
+    <tr><td><label for="id_last_name">{% trans "Last name" %}{% if form.last_name.field.required %}*{% endif %}</label></td><td> {{ form.last_name }}</td></tr>
+    {% if form.last_name.errors %}<tr><td>&nbsp;</td><td>*** {{ form.last_name.errors|join:", " }}</td></tr>{% endif %}
+
+    <tr><td><label for="id_organization">{% trans "Organization" %}{% if form.organization.field.required %}*{% endif %}</label></td><td> {{ form.organization }}</td></tr>
+    {% if form.organization.errors %}<tr><td>&nbsp;</td><td>*** {{ form.organization.errors|join:", " }}</td></tr>{% endif %}
+
+    <tr><td><label for="id_age">{% trans "Age" %}{% if form.age.field.required %}*{% endif %}</label></td><td> {{ form.age }}</td></tr>
+    {% if form.age.errors %}<tr><td>&nbsp;</td><td>*** {{ form.age.errors|join:", " }}</td></tr>{% endif %}
+
+    <tr><td><label for="id_phone">{% trans "Phone number" %}{% if form.phone.field.required %}*{% endif %}</label></td><td> {{ form.phone }}</td></tr>
+    {% if form.phone.errors %}<tr><td>&nbsp;</td><td>*** {{ form.phone.errors|join:", " }}</td></tr>{% endif %}
+
+    {% if show_newsletter %}
+    <tr><td><label for="id_newsletter">{% trans "Newsletter" %}{% if form.newsletter.field.required %}*{% endif %}</label></td><td> {{ form.newsletter }}</td></tr>
+    {% if form.newsletter.errors %}<tr><td>&nbsp;</td><td>*** {{ form.newsletter.errors|join:", " }}</td></tr>{% endif %}
+    {% else %}
+    <input type='hidden' name='newsletter' value="False" />
+    {% endif %}
+
+    {% block billing-info %}{% include "contact/_contact_info_form_billing.html" %}{% endblock %}
+
+    {% block shipping-info %}{% include "contact/_contact_info_form_shipping.html" %}{% endblock %}
+
+
+	<tr><td></td><td><input type="submit" value="{% trans "Update" %}"/></td></tr>
+</table>
+</form>
+{% endblock %}

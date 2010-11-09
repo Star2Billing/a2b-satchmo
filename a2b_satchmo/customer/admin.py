@@ -16,7 +16,7 @@ from a2b_satchmo.customer.models import *
 from a2b_satchmo.customer.function_def import *
 from satchmo_store.shop.models import Order, OrderItem
 from satchmo_store.shop.admin import OrderOptions
-
+from satchmo_store.contact.models import *
 from datetime import *
 
 # Language
@@ -41,7 +41,6 @@ class AlarmAdmin(admin.ModelAdmin):
     list_display_links = ('id', 'name',) 
 
 admin.site.register(Alarm, AlarmAdmin)
-
 
 
 class CardAdmin(admin.ModelAdmin):

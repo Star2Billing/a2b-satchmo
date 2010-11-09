@@ -5,20 +5,29 @@ from django.contrib import *
 from django.contrib.admin.widgets import *
 from uni_form.helpers import *
 from django.utils.translation import ugettext_lazy as _
+from satchmo_store.accounts.forms import RegistrationForm
 #from django.shortcuts import render_to_response
 #from datetime import *
 
 class LoginForm(forms.Form):
 	username = forms.CharField(max_length=100,required=True,)
 	password = forms.CharField(widget=forms.PasswordInput(),max_length=100,required=True,)
-    
-    
+        
 class CardForm(ModelForm):
     country  = forms.ChoiceField(choices=country_list())
     id_timezone = forms.ChoiceField(choices=timezone_list(),label='Timezone',required=True)
     class Meta:
         model = Card
         fields = ['lastname', 'firstname', 'address','city','state','country','zipcode','id_timezone','phone','fax']
+
+"""
+class UserCreationFormExtended(RegistrationForm):
+    age = forms.CharField(label=_('Age'),max_length=30, required=True)
+    def __init__(self, *args, **kwargs):
+        super(UserCreationFormExtended, self).__init__(*args, **kwargs)
+    class Meta:
+        model = User
+"""
 
 #Default ModelForm of Config Model is override 
 class ConfigForm(ModelForm):

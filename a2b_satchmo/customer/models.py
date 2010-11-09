@@ -13,8 +13,8 @@ from a2b_satchmo.customer.constants import *
 from django.utils.translation import ugettext_lazy as _
 #from django.forms import ModelForm
 from django.forms import ModelForm, Textarea, TextInput
-
 #
+
 class Model(models.Model):
     """
     Intermediate model base class.
