@@ -11,9 +11,3 @@ from satchmo_store.accounts.forms import RegistrationForm
 
 class PostPaidForm(forms.Form):
     dial_no = forms.IntegerField(required=True, help_text=_("Enter Destination Phone Number"))
-"""
-class UserRegistrationForm(RegistrationForm):
-    age = forms.CharField(label=_('Age'),max_length=30, required=True)
-    class Meta:
-        model = ExtendContact
-"""

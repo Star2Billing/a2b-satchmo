@@ -2,6 +2,7 @@
 
 from django.utils.translation import ugettext as _
 from django import forms
+from satchmo_store.accounts.forms import RegistrationForm
 import models
 
 def messer_contact_form_postsave(sender, object=None, formdata=None, form=None, **kwargs):
@@ -24,12 +25,10 @@ def messer_contact_add_form_fields(sender, form=None, **kwargs):
         if form._contact:
             if getattr(form._contact, 'localcontact', None):
                 age = form._contact.localcontact.age                
-        form.fields['age'] = forms.CharField( label=_('Age'), required=False,max_length=100,  initial=vat_number)
+        form.fields['age'] = forms.CharField( label=_('Age'), required=False,max_length=100,  initial=age)
     except :
         pass
 
-
-
-
-
+def form_age_listener(sender, form=None, **kwargs):
+    form.fields['age'] = forms.CharField(label=_('Age'), max_length=100,)
 

@@ -23,7 +23,7 @@ product_list = Product.objects.filter(featured=True)
 replacement = url(r'^quick_order/$', 'satchmo_store.shop.views.cart.add_multiple', {'products': product_list}, 'satchmo_quick_order')
 replace_urlpattern(urlpatterns, replacement)
 
-#replacement = url(r'^tracking/(?P<order_id>\d+)/$', 'a2b_satchmo.localsite.views.order_tracking',{}, 'satchmo_order_tracking')
+#replacement = url(r'^accounts/register/$', 'from satchmo_store.accounts.views.register',{'form_class': 'UserRegistrationForm'}, 'registration_register')
 #replace_urlpattern(urlpatterns, replacement)
 
 #urlpatterns += billingpattern
@@ -67,7 +67,6 @@ urlpatterns += patterns('a2b_satchmo.localsite.views',
     url(r'^make_call/$', 'make_call',{},'make_call'),
     url(r'^invoice/(?P<order_id>\d+)/$', 'invoice',{},'invoice'),
     url(r'^print/(?P<id>\d+)', 'invoice_print', {}, 'invoice_print'),
-    #url(r'^accounts/register/$', 'register',{}, "register"),
 )
 
 
