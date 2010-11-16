@@ -45,19 +45,40 @@ admin.site.register(Alarm, AlarmAdmin)
 
 class CardAdmin(admin.ModelAdmin):
     fieldsets = (
-        (None, {
-            
-            'fields': ('username', 'useralias','uipass','credit','id_group', 'serial','lastname','firstname',
-                       'email','address','city','state','country','zipcode','phone','fax','company_name',
-                       'company_website','typepaid','tariff','id_didgroup','id_timezone','currency','language',
-                       'status','simultaccess','runservice','creditlimit','credit_notification','notify_email',
-                       'email_notification','id_campaign','firstusedate','enableexpire','expirationdate',
-                       'expiredays','sip_buddy','iax_buddy','mac_addr','inuse','autorefill','initialbalance',
-                       'invoiceday','vat','vat_rn','discount','traffic','traffic_target','restriction')            
+        ('Customer Information', {
+            #'classes':('collapse',),
+            'fields': ('username', 'useralias','uipass','credit','id_group', 'serial',)
         }),
+        ('Personal Information', {
+            'classes':('collapse',),
+            'fields': ('lastname','firstname','email','address','city','state','country','zipcode','phone','fax','company_name','company_website',)
+        }),
+        ('Customer Status', {
+            'classes':('collapse',),
+            'fields': ('typepaid','tariff','id_didgroup','id_timezone','language','currency','status','simultaccess','runservice','creditlimit','credit_notification','notify_email',
+                       'email_notification','id_campaign','firstusedate','enableexpire','expirationdate','expiredays','sip_buddy','iax_buddy','mac_addr','inuse',)
+        }),
+        ('AUTOREFILL', {
+            'classes':('collapse',),
+            'fields': ('autorefill','initialbalance',)
+        }),
+        ('Invoice Status', {
+            'classes':('collapse',),
+            'fields': ('invoiceday','vat','vat_rn','discount',)
+        }),
+        ('TARGET TRAFFIC', {
+            'classes':('collapse',),
+            'fields': ('traffic','traffic_target')
+        }),
+
+        ('RESTRICTED NUMBERS', {
+            'classes':('collapse',),
+            'fields': ('restriction',)
+        }),
+        
     )
     
-    list_display = ('id', 'username', 'useralias','lastname','id_group','ba','tariff','status','language','action')
+    list_display = ('id', 'username', 'useralias','lastname','id_group','ba','tariff','status','language','is_active','action')
     search_fields = ('useralias', 'username')
     ordering = ('id',)
     list_filter = ['status','id_group','language']
@@ -67,6 +88,11 @@ class CardAdmin(admin.ModelAdmin):
         super(CardAdmin, self).__init__(*args, **kwargs)
         self.list_display_links = ('username', )
     
+    def is_active(self,obj):
+        return obj.activated == 't'
+    is_active.boolean = True
+    is_active.short_description = 'Activated'
+
     def get_urls(self):
         urls = super(CardAdmin, self).get_urls()
         my_urls = patterns('',
@@ -98,15 +124,20 @@ class CardAdmin(admin.ModelAdmin):
 
 admin.site.register(Card, CardAdmin)
 #databrowse.site.register(Card)
-
+"""
+class CardInline(admin.TabularInline):
+    model = Trunk
+    fk_name = "id_trunk"
+"""
 class CallAdmin(admin.ModelAdmin):
     list_display = ('starttime','src','dnid','calledstation','destination_name' ,'card_id_link','id_trunk','buy','call_charge','duration','terminatecauseid','sipiax')
     list_filter = ['starttime', 'calledstation']
-    #search_fields = ('card_id', 'dst', 'src','starttime',)
+    #search_fields = ('card_id','dst', 'src','starttime',)
     date_hierarchy = ('starttime')
-    ordering = ('-id',)    
+    ordering = ('-id',)
+    list_editable = ['src']
     change_list_template = 'admin/customer/call/change_list.html'    
-    
+    #inlines = [CardInline]
     def __init__(self, *args, **kwargs):
         super(CallAdmin, self).__init__(*args, **kwargs)
         self.list_display_links = (None, )    
