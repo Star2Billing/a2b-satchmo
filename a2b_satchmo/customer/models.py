@@ -458,7 +458,8 @@ class Call(models.Model):
     id_trunk = models.ForeignKey(Trunk, db_column="id_trunk",null=True, blank=True)
     #card_id = models.IntegerField()
     card_id = models.ForeignKey(Card,db_column="card_id",null=True, blank=True)
-
+    #card_id = models.ManyToManyField(Card, blank=True, )
+    
     def card_id_link(self):
         return '<a href="../card/%s">%s</a>' % (self.card_id,self.card_id)
     card_id_link.allow_tags = True
@@ -849,17 +850,17 @@ class CcEpaymentLogAgent(models.Model):
     class Meta:
         db_table = u'cc_epayment_log_agent'
 
-class CcIaxBuddies(models.Model):
+class IaxBuddies(models.Model):
     id = models.IntegerField(primary_key=True)
     id_cc_card = models.IntegerField()
     name = models.CharField(max_length=240)
     accountcode = models.CharField(max_length=60)
     regexten = models.CharField(max_length=60)
-    amaflags = models.CharField(max_length=21, blank=True)
+    amaflags = models.CharField(max_length=21, blank=True, help_text=_("(default : billing)"))
     callerid = models.CharField(max_length=240)
-    context = models.CharField(max_length=240)
-    defaultip = models.CharField(max_length=45, db_column='DEFAULTip', blank=True) # Field name made lowercase.
-    host = models.CharField(max_length=93)
+    context = models.CharField(max_length=240, help_text=_("set the context for this user (default : a2billing )   "))
+    defaultip = models.CharField(max_length=45, db_column='defaultip', blank=True)
+    host = models.CharField(max_length=93, help_text=_("Use dynamic or set an IP ( default : dynamic )  "))
     language = models.CharField(max_length=6, blank=True)
     permit = models.CharField(max_length=285)
     deny = models.CharField(max_length=285)
@@ -867,13 +868,13 @@ class CcIaxBuddies(models.Model):
     port = models.CharField(max_length=15)
     qualify = models.CharField(max_length=21, blank=True)
     secret = models.CharField(max_length=240)
-    type = models.CharField(max_length=18)
+    type = models.CharField(max_length=18, help_text=_("type = friend | peer | user ( default : friend )   "))
     username = models.CharField(max_length=240)
-    disallow = models.CharField(max_length=300)
-    allow = models.CharField(max_length=300)
+    disallow = models.CharField(max_length=300, help_text=_("need to disallow=all before we can use allow. ( default : all )"))
+    allow = models.CharField(max_length=300, help_text=_("Set allow codecs separated by a comma, e.g. gsm,alaw,ulaw ( default : ulaw,alaw,gsm,g729)   "))
     regseconds = models.IntegerField()
     ipaddr = models.CharField(max_length=45)
-    trunk = models.CharField(max_length=9, blank=True)
+    trunk = models.CharField(max_length=9, blank=True,help_text=_("iax trunking = yes | no ( default : yes )"))
     dbsecret = models.CharField(max_length=120)
     regcontext = models.CharField(max_length=120)
     sourceaddress = models.CharField(max_length=60)
@@ -897,11 +898,27 @@ class CcIaxBuddies(models.Model):
     timezone = models.CharField(max_length=60)
     adsi = models.CharField(max_length=30)
     setvar = models.CharField(max_length=600)
-    requirecalltoken = models.CharField(max_length=60)
-    maxcallnumbers = models.CharField(max_length=30)
-    maxcallnumbers_nonvalidated = models.CharField(max_length=30)
+    requirecalltoken = models.CharField(max_length=60,help_text=_("No supported by Realtime"))
+    maxcallnumbers = models.CharField(max_length=30,help_text=_("No supported by Realtime"))
+    maxcallnumbers_nonvalidated = models.CharField(max_length=30,help_text=_("No supported by Realtime"))
     class Meta:
-        db_table = u'cc_iax_buddies'
+        db_table = u'cc_iax_buddies'        
+        verbose_name_plural = _("IAX Account")
+        
+    def default_ip(self):
+        if self.defaultip is None:
+            return ""
+        else:
+            return self.defaultip
+    default_ip.short_description = "DEFAULTIP "
+
+    def card_holder_name(self):
+        if self.id_cc_card is not None:
+            card = Card.objects.get(pk=self.id_cc_card)
+            return card.firstname + " " + card.lastname
+        else:
+            return self.id_cc_card
+    card_holder_name.short_description = "CARDHOLDER"
 
 class CcInvoice(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -1339,27 +1356,27 @@ class CcServiceReport(models.Model):
     class Meta:
         db_table = u'cc_service_report'
 
-class CcSipBuddies(models.Model):
+class SipBuddies(models.Model):
     id = models.IntegerField(primary_key=True)
     id_cc_card = models.IntegerField()
     name = models.CharField(max_length=240)
     accountcode = models.CharField(max_length=60)
     regexten = models.CharField(max_length=60)
-    amaflags = models.CharField(max_length=21, blank=True)
+    amaflags = models.CharField(max_length=21, blank=True,help_text=_("(default : billing)"))
     callgroup = models.CharField(max_length=30, blank=True)
     callerid = models.CharField(max_length=240)
-    canreinvite = models.CharField(max_length=60)
-    context = models.CharField(max_length=240)
-    defaultip = models.CharField(max_length=45, db_column='DEFAULTip', blank=True) # Field name made lowercase.
-    dtmfmode = models.CharField(max_length=21)
+    canreinvite = models.CharField(max_length=60,help_text=_("canreinvite : yes | no ( default : yes )"))
+    context = models.CharField(max_length=240, help_text=_("set the context for this user (default : a2billing )"))
+    defaultip = models.CharField(max_length=45, db_column='defaultip', blank=True) # Field name made lowercase.
+    dtmfmode = models.CharField(max_length=21,help_text=_("dtmfmode = RFC2833 | INFO | INBAND | AUTO ( default : RFC2833 )"))
     fromuser = models.CharField(max_length=240)
     fromdomain = models.CharField(max_length=240)
-    host = models.CharField(max_length=93)
+    host = models.CharField(max_length=93, help_text=_("Use dynamic or set an IP ( default : dynamic )"))
     insecure = models.CharField(max_length=60)
     language = models.CharField(max_length=6, blank=True)
     mailbox = models.CharField(max_length=150)
     md5secret = models.CharField(max_length=240)
-    nat = models.CharField(max_length=9, blank=True)
+    nat = models.CharField(max_length=9, blank=True,help_text=_("nat = yes | no | never | route ( default : yes )"))
     permit = models.CharField(max_length=285)
     deny = models.CharField(max_length=285)
     mask = models.CharField(max_length=285)
@@ -1370,14 +1387,14 @@ class CcSipBuddies(models.Model):
     rtptimeout = models.CharField(max_length=9, blank=True)
     rtpholdtimeout = models.CharField(max_length=9, blank=True)
     secret = models.CharField(max_length=240)
-    type = models.CharField(max_length=18)
+    type = models.CharField(max_length=18,help_text=_("type = friend | peer | user ( default : friend )"))
     username = models.CharField(max_length=240)
-    disallow = models.CharField(max_length=300)
-    allow = models.CharField(max_length=300)
+    disallow = models.CharField(max_length=300, help_text=_("need to disallow=all before we can use allow. ( default : all )"))
+    allow = models.CharField(max_length=300, help_text=_("Set allow codecs separated by a comma, e.g. gsm,alaw,ulaw ( default : ulaw,alaw,gsm,g729)"))
     musiconhold = models.CharField(max_length=300)
     regseconds = models.IntegerField()
     ipaddr = models.CharField(max_length=45)
-    cancallforward = models.CharField(max_length=9, blank=True)
+    cancallforward = models.CharField(max_length=9, blank=True,help_text=_("cancallforward = yes | no ( default : yes )"))
     fullcontact = models.CharField(max_length=240)
     setvar = models.CharField(max_length=300)
     regserver = models.CharField(max_length=60, blank=True)
@@ -1400,8 +1417,24 @@ class CcSipBuddies(models.Model):
     rtpkeepalive = models.CharField(max_length=45)
     class Meta:
         db_table = u'cc_sip_buddies'
+        verbose_name_plural = _("SIP Account")
 
-class CcSipBuddiesEmpty(models.Model):
+    def default_ip(self):
+        if self.defaultip is None:
+            return ""
+        else:
+            return self.defaultip
+    default_ip.short_description = "DEFAULTIP "
+
+    def card_holder_name(self):
+        if self.id_cc_card is not None:
+            card = Card.objects.get(pk=self.id_cc_card)
+            return card.firstname + " " + card.lastname
+        else:
+            return self.id_cc_card
+    card_holder_name.short_description = "CARDHOLDER"
+
+class SipBuddiesEmpty(models.Model):
     id = models.IntegerField(primary_key=True)
     id_cc_card = models.IntegerField()
     name = models.CharField(max_length=240)
