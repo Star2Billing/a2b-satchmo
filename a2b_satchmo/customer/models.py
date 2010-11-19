@@ -54,7 +54,10 @@ class Language(models.Model):
     charset = models.CharField(max_length=60, blank=True)    
     class Meta:
         db_table = u'cc_language'
-    
+        
+    def save(self, **kwargs):        
+        super(Language, self).save(**kwargs)
+
     def __unicode__(self):
         return '[%s] %s' %(self.code, self.name)
 
@@ -853,6 +856,8 @@ class CcEpaymentLogAgent(models.Model):
 class IaxBuddies(models.Model):
     id = models.IntegerField(primary_key=True)
     id_cc_card = models.IntegerField()
+    #id_cc_card = models.ManyToManyField(Card,db_column="id_cc_card",verbose_name=_('card_id'), blank=True)
+    #id_cc_card = models.ForeignKey(Card,db_column="id_cc_card",null=True, blank=True)
     name = models.CharField(max_length=240)
     accountcode = models.CharField(max_length=60)
     regexten = models.CharField(max_length=60)
@@ -911,7 +916,7 @@ class IaxBuddies(models.Model):
         else:
             return self.defaultip
     default_ip.short_description = "DEFAULTIP "
-
+    
     def card_holder_name(self):
         if self.id_cc_card is not None:
             card = Card.objects.get(pk=self.id_cc_card)
@@ -919,6 +924,7 @@ class IaxBuddies(models.Model):
         else:
             return self.id_cc_card
     card_holder_name.short_description = "CARDHOLDER"
+    
 
 class CcInvoice(models.Model):
     id = models.IntegerField(primary_key=True)

@@ -18,6 +18,7 @@ from satchmo_store.shop.models import Order, OrderItem
 from satchmo_store.shop.admin import OrderOptions
 from satchmo_store.contact.models import *
 from datetime import *
+import csv
 
 # Language
 class LanguageAdmin(admin.ModelAdmin):
@@ -94,10 +95,34 @@ class CardAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(CardAdmin, self).get_urls()
         my_urls = patterns('',
-            (r'^view/(?P<id>\d+)$', self.admin_site.admin_view(self.card_detail))
+            (r'^view/(?P<id>\d+)$', self.admin_site.admin_view(self.card_detail)),
+            (r'^import_cust/$', self.admin_site.admin_view(self.import_cust)),
         )
         return my_urls + urls
-
+    
+    def import_cust(self,request):
+        opts = Card._meta
+        app_label = opts.app_label
+        if request.method is not None:
+            if request.method == 'POST':
+                print request.FILES['file']
+                #header = 'contact_owner', 'contact_name', 'contact_mobile_number', 'select_group'
+                rdr= csv.reader(request.FILES['file'])
+                #for row in rdr:
+                #    print row                                
+            form = CustImport(request.FILES)#request.POST,
+        else:
+            form = CustImport()
+        ctx = RequestContext(request, {
+        'title': _('Import Customer'),
+        'form':form,
+        'opts': opts,
+        'model_name': opts.object_name.lower(),
+        'app_label': app_label,
+        'data':rdr,
+        })
+        return render_to_response('admin/customer/card/import_cust.html',context_instance=ctx)
+    
     def card_detail(self,request, id):
         card = model_to_dict(Card.objects.get(pk=id),exclude=('email_notification', 'loginkey'))
         opts = Card._meta

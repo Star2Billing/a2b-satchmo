@@ -43,7 +43,7 @@ urlpatterns += patterns('',
 
     (r'^admin/language/$', 'a2b_satchmo.customer.admin_views.my_admin_language_view'),
     (r'^admin/card/$', 'a2b_satchmo.customer.admin_views.my_admin_card_view'),
-    (r'^admin/cdr/$', 'a2b_satchmo.customer.admin_views.my_admin_cdr_view'),
+    (r'^admin/cdr/$', 'a2b_satchmo.customer.admin_views.my_admin_cdr_view'),    
     (r'^admin/', include(admin.site.urls)),
     (r'^api/', include('a2b_satchmo.api.urls')),
 )
@@ -66,7 +66,7 @@ urlpatterns += patterns('a2b_satchmo.customer.views',
 urlpatterns += patterns('a2b_satchmo.localsite.views',
     url(r'^make_call/$', 'make_call',{},'make_call'),
     url(r'^invoice/(?P<order_id>\d+)/$', 'invoice',{},'invoice'),
-    url(r'^print/(?P<id>\d+)', 'invoice_print', {}, 'invoice_print'),
+    url(r'^print/(?P<id>\d+)', 'invoice_print', {}, 'invoice_print'),   
 )
 
 

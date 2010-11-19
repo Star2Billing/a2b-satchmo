@@ -65,3 +65,6 @@ class SearchForm(forms.Form):
 class CheckoutPaymentForm(forms.Form):
     payment_method = forms.TypedChoiceField(coerce=bool,choices=(('paypal', 'PayPal'), ),widget=forms.RadioSelect)#('moneybookers', 'Moneybookers.com'), ('plugnpay', 'PlugnPay')
     purchase_amount = forms.ChoiceField(label=u'Total Amount:')#,choices=purchase_amount_list()
+
+class CustImport(forms.Form):
+    file = forms.FileField(label=_('File:'),required=True)

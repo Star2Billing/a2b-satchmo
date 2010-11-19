@@ -8,7 +8,7 @@ from django.views.decorators.cache import never_cache
 from satchmo_store.contact.models import Contact
 from satchmo_store.shop.models import Order, OrderItem, Config
 from satchmo_utils.views import bad_or_missing
-from a2b_satchmo.localsite.forms import PostPaidForm
+from a2b_satchmo.localsite.forms import *
 from livesettings import config_value
 import os
 import urllib
