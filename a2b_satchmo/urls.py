@@ -12,8 +12,8 @@ from satchmo_store.urls import urlpatterns
 from satchmo_utils.urlhelper import replace_urlpattern
 from product.models import Product
 
-import django_cron
-django_cron.autodiscover()
+#import django_cron
+#django_cron.autodiscover()
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin 

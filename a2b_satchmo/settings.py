@@ -199,7 +199,7 @@ INSTALLED_APPS = (
     #'paypal.standard.ipn', 
     'a2b_satchmo.api',
     'django_extensions',
-    'django_cron',
+    #'django_cron',
     #'staticfiles',
 )
 
