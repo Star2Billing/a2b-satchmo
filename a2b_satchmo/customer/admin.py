@@ -103,23 +103,25 @@ class CardAdmin(admin.ModelAdmin):
     def import_cust(self,request):
         opts = Card._meta
         app_label = opts.app_label
-        if request.method is not None:
-            if request.method == 'POST':
-                print request.FILES['file']
-                #header = 'contact_owner', 'contact_name', 'contact_mobile_number', 'select_group'
-                rdr= csv.reader(request.FILES['file'])
+        file_exts = ('.csv',)
+        rdr = ''        
+        if request.method == 'POST':
+            #print request.FILES
+            form = CustImport(request.POST,request.FILES)
+            if form.is_valid():
+                rdr= csv.reader(request.FILES['csv_file'])
                 #for row in rdr:
-                #    print row                                
-            form = CustImport(request.FILES)#request.POST,
-        else:
+                #    print row
+        else:            
             form = CustImport()
+        #print rdr
         ctx = RequestContext(request, {
         'title': _('Import Customer'),
         'form':form,
-        'opts': opts,
+        'opts': opts,        
         'model_name': opts.object_name.lower(),
         'app_label': app_label,
-        'data':rdr,
+        'rdr':rdr,        
         })
         return render_to_response('admin/customer/card/import_cust.html',context_instance=ctx)
     

@@ -1,3 +1,4 @@
+import os
 from django import forms
 from a2b_satchmo.customer.function_def import *
 from django.forms import ModelForm
@@ -67,4 +68,14 @@ class CheckoutPaymentForm(forms.Form):
     purchase_amount = forms.ChoiceField(label=u'Total Amount:')#,choices=purchase_amount_list()
 
 class CustImport(forms.Form):
-    file = forms.FileField(label=_('File:'),required=True)
+    csv_file = forms.FileField(label=_('File '),required=True, error_messages={'required': 'Please upload File'},)
+    
+    def clean_file(self):
+        filename = self.cleaned_data["csv_file"]
+        file_exts = ('.csv',)        
+        if not str(filename).split(".")[1].lower() in file_exts:
+            raise forms.ValidationError(_(u'Document types accepted: %s' % ' '.join(file_exts)))
+        else:
+            return filename
+    
+   

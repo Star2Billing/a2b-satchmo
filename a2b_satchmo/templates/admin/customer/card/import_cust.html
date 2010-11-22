@@ -25,12 +25,13 @@
 {% block content %}
 <div id="content-main">
 <form method="post" action="" enctype="multipart/form-data" >
-<table>
-<tr><td>{{ form.file.label }}</td><td>{{ form.file }}</td></tr></table>
-<tr><td><input type=submit name=submit value=Submit /> <input type=reset name=reset value=Reset /></td></tr>
+{{ form.as_table }}
+<input type=submit name=submit value=Submit /> <input type=reset name=reset value=Reset />
 </form>
-{% for row in data %}
+{{ rdr }}
+{% for row in rdr %}
 {{ row }}
+shrenik
 {% endfor %}
 </div>
 {% endblock %}
