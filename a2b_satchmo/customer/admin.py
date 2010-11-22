@@ -16,8 +16,9 @@ from a2b_satchmo.customer.models import *
 from a2b_satchmo.customer.function_def import *
 from satchmo_store.shop.models import Order, OrderItem
 from satchmo_store.shop.admin import OrderOptions
-
+from satchmo_store.contact.models import *
 from datetime import *
+import csv
 
 # Language
 class LanguageAdmin(admin.ModelAdmin):
@@ -56,22 +57,40 @@ class AlarmAdmin(admin.ModelAdmin):
 admin.site.register(Alarm, AlarmAdmin)
 
 
-
 class CardAdmin(admin.ModelAdmin):
     fieldsets = (
-        (None, {
-            
-            'fields': ('username', 'useralias','uipass','credit','id_group', 'serial','lastname','firstname',
-                       'email','address','city','state','country','zipcode','phone','fax','company_name',
-                       'company_website','typepaid','tariff','id_didgroup','id_timezone','currency','language',
-                       'status','simultaccess','runservice','creditlimit','credit_notification','notify_email',
-                       'email_notification','id_campaign','firstusedate','enableexpire','expirationdate',
-                       'expiredays','sip_buddy','iax_buddy','mac_addr','inuse','autorefill','initialbalance',
-                       'invoiceday','vat','vat_rn','discount','traffic','traffic_target','restriction')            
+        (_('Customer Information'), {
+            #'classes':('collapse',),
+            'fields': ('username', 'useralias','uipass','credit','id_group', 'serial',)
         }),
+        (_('Personal Information'), {
+            'classes':('collapse',),
+            'fields': ('lastname','firstname','email','address','city','state','country','zipcode','phone','fax','company_name','company_website',)
+        }),
+        (_('Customer Status'), {
+            'classes':('collapse',),
+            'fields': ('typepaid','tariff','id_didgroup','id_timezone','language','currency','status','simultaccess','runservice','creditlimit','credit_notification','notify_email',
+                       'email_notification','id_campaign','firstusedate','enableexpire','expirationdate','expiredays','sip_buddy','iax_buddy','mac_addr','inuse',)
+        }),
+        (_('AUTOREFILL'), {
+            'classes':('collapse',),
+            'fields': ('autorefill','initialbalance',)
+        }),
+        (_('Invoice Status'), {
+            'classes':('collapse',),
+            'fields': ('invoiceday','vat','vat_rn','discount',)
+        }),
+        (_('TARGET TRAFFIC'), {
+            'classes':('collapse',),
+            'fields': ('traffic','traffic_target')
+        }),
+        (_('RESTRICTED NUMBERS'), {
+            'classes':('collapse',),
+            'fields': ('restriction',)
+        }),        
     )
     
-    list_display = ('id', 'username', 'useralias','lastname','id_group','ba','tariff','status','language','action')
+    list_display = ('id', 'username', 'useralias','lastname','id_group','ba','tariff','status','language','is_active','action')    
     search_fields = ('useralias', 'username')
     ordering = ('id',)
     list_filter = ['status','id_group','language']
@@ -81,13 +100,44 @@ class CardAdmin(admin.ModelAdmin):
         super(CardAdmin, self).__init__(*args, **kwargs)
         self.list_display_links = ('username', )
     
+    def is_active(self,obj):
+        return obj.activated == 't'
+    is_active.boolean = True
+    is_active.short_description = 'Activated'
+
     def get_urls(self):
         urls = super(CardAdmin, self).get_urls()
         my_urls = patterns('',
-            (r'^view/(?P<id>\d+)$', self.admin_site.admin_view(self.card_detail))
+            (r'^view/(?P<id>\d+)$', self.admin_site.admin_view(self.card_detail)),
+            (r'^import_cust/$', self.admin_site.admin_view(self.import_cust)),
         )
         return my_urls + urls
-
+    
+    def import_cust(self,request):
+        opts = Card._meta
+        app_label = opts.app_label
+        file_exts = ('.csv',)
+        rdr = ''        
+        if request.method == 'POST':
+            #print request.FILES
+            form = CustImport(request.POST,request.FILES)
+            if form.is_valid():
+                rdr= csv.reader(request.FILES['csv_file'])
+                #for row in rdr:
+                #    print row
+        else:            
+            form = CustImport()
+        #print rdr
+        ctx = RequestContext(request, {
+        'title': _('Import Customer'),
+        'form':form,
+        'opts': opts,        
+        'model_name': opts.object_name.lower(),
+        'app_label': app_label,
+        'rdr':rdr,        
+        })
+        return render_to_response('admin/customer/card/import_cust.html',context_instance=ctx)
+    
     def card_detail(self,request, id):
         card = model_to_dict(Card.objects.get(pk=id),exclude=('email_notification', 'loginkey'))
         opts = Card._meta
@@ -112,15 +162,20 @@ class CardAdmin(admin.ModelAdmin):
 
 admin.site.register(Card, CardAdmin)
 #databrowse.site.register(Card)
-
+"""
+class CardInline(admin.TabularInline):
+    model = Trunk
+    fk_name = "id_trunk"
+"""
 class CallAdmin(admin.ModelAdmin):
     list_display = ('starttime','src','dnid','calledstation','destination_name' ,'card_id_link','id_trunk','buy','call_charge','duration','terminatecauseid','sipiax')
-    list_filter = ['starttime', 'calledstation']
-    #search_fields = ('card_id', 'dst', 'src','starttime',)
+    list_filter = ['starttime', 'calledstation']    
+    #search_fields = ('card_id','dst', 'src','starttime',)
     date_hierarchy = ('starttime')
-    ordering = ('-id',)    
+    ordering = ('-id',)
+    #list_editable = ['src']
     change_list_template = 'admin/customer/call/change_list.html'    
-    
+    #inlines = [CardInline]
     def __init__(self, *args, **kwargs):
         super(CallAdmin, self).__init__(*args, **kwargs)
         self.list_display_links = (None, )    
@@ -183,6 +238,58 @@ class ConfigAdmin(admin.ModelAdmin):
     #}
 
 admin.site.register(Config, ConfigAdmin)
+
+#Admin side  IaxBuddies Model
+class  IaxBuddiesAdmin(admin.ModelAdmin):
+    fieldsets = (
+        (None, {
+            'fields': ('id_cc_card','name','accountcode','regexten','callerid','cid_number','amaflags','secret','qualify',
+                       'disallow','allow','host','context','defaultip','language','port','regseconds','ipaddr',
+                       'mohsuggest','auth','setvar','type','permit','deny','trunk','dbsecret','regcontext','sourceaddress','mohinterpret',
+                       'inkeys','outkey','sendani','fullname','maxauthreq','encryption','transfer',
+                       'jitterbuffer','forcejitterbuffer','codecpriority','qualifysmoothing','qualifyfreqok','qualifyfreqnotok',
+                       'timezone','adsi','requirecalltoken','maxcallnumbers','maxcallnumbers_nonvalidated',
+                       ),
+        }),
+    )
+    list_display = ('card_holder_name','name','accountcode','secret','callerid','context','default_ip')
+    search_fields = ('name',)
+    list_display_links = ('name',)
+    ordering = ('name',)
+    """
+    #form = ConfigForm
+    list_filter = ['config_group_title']
+    ordering = ('config_group_title',)
+    """
+
+admin.site.register(IaxBuddies,  IaxBuddiesAdmin)
+
+#Admin side SipBuddies Model
+class SipBuddiesAdmin(admin.ModelAdmin):
+    fieldsets = (
+        (None, {
+            'fields': ('id_cc_card','name','accountcode','regexten','callerid','cid_number','amaflags','secret','qualify',
+                       'disallow','allow','host','context','defaultip','language','port','regseconds','ipaddr',
+                       'mohsuggest','auth','setvar','type','permit','deny','username','md5secret','nat','dtmfmode',
+                       'canreinvite','callgroup','fromuser','fromdomain','insecure','mailbox','mask','pickupgroup',
+                       'restrictcid','rtptimeout','rtpholdtimeout','musiconhold','cancallforward','defaultuser','subscribemwi',
+                       'vmexten','callingpres','usereqphone','incominglimit','subscribecontext','musicclass',
+                       'allowtransfer','autoframing','maxcallbitrate','outboundproxy','regserver','rtpkeepalive',
+            ),
+        }),
+    )
+    list_display = ('card_holder_name','name','accountcode','secret','callerid','context','default_ip')
+    search_fields = ('name',)
+    list_display_links = ('name',)
+    ordering = ('name',)
+    """
+    #form = ConfigForm
+    list_filter = ['config_group_title']
+    ordering = ('config_group_title',)
+    """
+
+admin.site.register(SipBuddies, SipBuddiesAdmin)
+
 
 class OrderExtend:
     def order_sku(self):

@@ -329,12 +329,8 @@ def check_login(request):
         form = LoginForm() # An unbound form
         return render_to_response('index.html', {'form': form,},context_instance = RequestContext(request))
         
-        
-
-
-
+    
 def logout_view(request):
 	logout(request)
 	form = LoginForm()
 	return HttpResponseRedirect('/')
-

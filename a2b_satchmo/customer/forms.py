@@ -1,3 +1,4 @@
+import os
 from django import forms
 from a2b_satchmo.customer.function_def import *
 from django.forms import ModelForm
@@ -5,20 +6,29 @@ from django.contrib import *
 from django.contrib.admin.widgets import *
 from uni_form.helpers import *
 from django.utils.translation import ugettext_lazy as _
+from satchmo_store.accounts.forms import RegistrationForm
 #from django.shortcuts import render_to_response
 #from datetime import *
 
 class LoginForm(forms.Form):
 	username = forms.CharField(max_length=100,required=True,)
 	password = forms.CharField(widget=forms.PasswordInput(),max_length=100,required=True,)
-    
-    
+        
 class CardForm(ModelForm):
     country  = forms.ChoiceField(choices=country_list())
     id_timezone = forms.ChoiceField(choices=timezone_list(),label='Timezone',required=True)
     class Meta:
         model = Card
         fields = ['lastname', 'firstname', 'address','city','state','country','zipcode','id_timezone','phone','fax']
+
+"""
+class UserCreationFormExtended(RegistrationForm):
+    age = forms.CharField(label=_('Age'),max_length=30, required=True)
+    def __init__(self, *args, **kwargs):
+        super(UserCreationFormExtended, self).__init__(*args, **kwargs)
+    class Meta:
+        model = User
+"""
 
 #Default ModelForm of Config Model is override 
 class ConfigForm(ModelForm):
@@ -56,3 +66,16 @@ class SearchForm(forms.Form):
 class CheckoutPaymentForm(forms.Form):
     payment_method = forms.TypedChoiceField(coerce=bool,choices=(('paypal', 'PayPal'), ),widget=forms.RadioSelect)#('moneybookers', 'Moneybookers.com'), ('plugnpay', 'PlugnPay')
     purchase_amount = forms.ChoiceField(label=u'Total Amount:')#,choices=purchase_amount_list()
+
+class CustImport(forms.Form):
+    csv_file = forms.FileField(label=_('File '),required=True, error_messages={'required': 'Please upload File'},)
+    
+    def clean_file(self):
+        filename = self.cleaned_data["csv_file"]
+        file_exts = ('.csv',)        
+        if not str(filename).split(".")[1].lower() in file_exts:
+            raise forms.ValidationError(_(u'Document types accepted: %s' % ' '.join(file_exts)))
+        else:
+            return filename
+    
+   

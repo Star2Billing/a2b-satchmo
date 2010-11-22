@@ -8,7 +8,7 @@ from django.views.decorators.cache import never_cache
 from satchmo_store.contact.models import Contact
 from satchmo_store.shop.models import Order, OrderItem, Config
 from satchmo_utils.views import bad_or_missing
-from a2b_satchmo.localsite.forms import PostPaidForm
+from a2b_satchmo.localsite.forms import *
 from livesettings import config_value
 import os
 import urllib
@@ -111,3 +111,7 @@ def invoice_print(request, id):
     return response
 
 invoice_print = login_required(never_cache(invoice_print))
+
+def shop_terms(request):
+    ctx = RequestContext(request, {})
+    return render_to_response('localsite/shop-terms.html',context_instance=ctx)
