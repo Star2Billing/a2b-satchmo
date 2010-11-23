@@ -77,5 +77,13 @@ class CustImport(forms.Form):
             raise forms.ValidationError(_(u'Document types accepted: %s' % ' '.join(file_exts)))
         else:
             return filename
-    
-   
+"""
+class CalleridForm(ModelForm):        
+    cid = forms.CharField(label=_('Caller ID'), widget=forms.TextInput(attrs={'size': 15}))
+    #id_cc_card = forms.IntegerField()
+    #id_cc_card = forms.ModelMultipleChoiceField(queryset=Card.objects.all())
+    activated = forms.TypedChoiceField(label=_('Status'),coerce=bool,widget=forms.RadioSelect,choices=(('t', 'True'), ('f', 'False')))    
+    class Meta:
+        model = Callerid
+        fields = ['cid', 'card_id','activated',]
+"""

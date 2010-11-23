@@ -122,12 +122,14 @@ class CardAdmin(admin.ModelAdmin):
             #print request.FILES
             form = CustImport(request.POST,request.FILES)
             if form.is_valid():
-                rdr= csv.reader(request.FILES['csv_file'])
+                header = ['Calldate','Channel','Source','Clid','Destination','Disposition','Duration','AccountCode']
+                rdr = csv.reader(request.FILES['csv_file'])
+                #rdr.next()
                 #for row in rdr:
                 #    print row
         else:            
             form = CustImport()
-        #print rdr
+        
         ctx = RequestContext(request, {
         'title': _('Import Customer'),
         'form':form,
@@ -206,6 +208,34 @@ class CallAdmin(admin.ModelAdmin):
 admin.site.register(Call, CallAdmin)
 
 
+class CalleridAdmin(admin.ModelAdmin):
+    #form = CalleridForm
+    list_display = ('cid','customer_acc_no','customer_name','is_active')
+    search_fields = ('cid', 'id_cc_card')
+    ordering = ('id',)
+    actions = ['make_active_deactive']
+
+    def make_active_deactive(self, request, queryset):        
+        for i in queryset:
+            callerid = Callerid.objects.values('activated').get(id=i.id)           
+            if callerid['activated'] == 't':
+                rows_updated = Callerid.objects.values('activated').filter(id=i.id).update(activated='f')
+            else:
+                rows_updated = Callerid.objects.values('activated').filter(id=i.id).update(activated='t')
+                
+        if rows_updated == 1:
+            message_bit = "1 caller id was"
+        else:
+            message_bit = "%s caller ids were" % rows_updated
+        self.message_user(request, "%s successfully updated." % message_bit)
+    make_active_deactive.short_description = "Mark selected Caller ID as Active/Deactive"
+    
+    def is_active(self,obj):
+        return obj.activated == 't'
+    is_active.boolean = True
+    is_active.short_description = 'Activated'
+
+admin.site.register(Callerid, CalleridAdmin)
 
 #Config Group List
 class ConfigGroupAdmin(admin.ModelAdmin):

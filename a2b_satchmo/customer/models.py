@@ -432,7 +432,7 @@ class Card(models.Model):
     
     class Meta:
         db_table = u'cc_card'
-        verbose_name = _("Cust")
+        verbose_name = _("Customer")
         verbose_name_plural = _("Customer")
 
 
@@ -558,10 +558,31 @@ class Callerid(models.Model):
     id = models.IntegerField(primary_key=True)
     cid = models.CharField(unique=True, max_length=255)
     id_cc_card = models.IntegerField()
+    #id_cc_card = models.ManyToManyField(Card, blank=True)    
+    #id_cc_card = models.ForeignKey(Card,db_column='card_id',related_name='+',null=True, blank=True)
     activated = models.CharField(max_length=3)
+    
     class Meta:
         db_table = u'cc_callerid'
+        verbose_name_plural = "Caller ID"
 
+    def customer_acc_no(self):
+        if self.id_cc_card is not None:
+            card = Card.objects.get(pk=self.id_cc_card)
+            return card.username
+        else:
+            return self.id_cc_card
+    customer_acc_no.short_description = "ACCOUNT NO"
+
+    def customer_name(self):
+        if self.id_cc_card is not None:
+            card = Card.objects.get(pk=self.id_cc_card)
+            return '<a href="../card/%s">%s %s</a>' % (self.id_cc_card,card.firstname,card.lastname)
+        else:
+            return self.id_cc_card
+    customer_name.short_description = "CUSTOMER NAME "
+    customer_name.allow_tags = True
+    
 class CallplanLcr(models.Model):
     id = models.IntegerField(primary_key=True)
     destination = models.CharField(max_length=180, blank=True)

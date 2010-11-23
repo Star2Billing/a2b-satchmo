@@ -28,10 +28,9 @@
 {{ form.as_table }}
 <input type=submit name=submit value=Submit /> <input type=reset name=reset value=Reset />
 </form>
-{{ rdr }}
+
 {% for row in rdr %}
-{{ row }}
-shrenik
+<p>{{ row }}</p>
 {% endfor %}
 </div>
 {% endblock %}
