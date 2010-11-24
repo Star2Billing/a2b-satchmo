@@ -5,18 +5,24 @@ import string
 import calendar
 
 
-
 def country_list():
-        list = Country.objects.all()
-        return ((l.countrycode, l.countryname) for l in list)
+    list = Country.objects.all()
+    return ((l.countrycode, l.countryname) for l in list)
 
+def customer_id_list():
+    list = Card.objects.all().order_by('id')
+    return ((l.id, l.id) for l in list)
+
+def speed_dial_range():
+    LIST = range(0,9)
+    list = map(lambda x:(x,x),LIST)
+    return list
 
 def get_unique_id():
     """get unique id"""
     length=8
     chars="abcdefghijklmnopqrstuvwxyz1234567890"
     return ''.join([choice(chars) for i in range(length)])
-
 
 def pass_gen():
     char_length=2
@@ -44,12 +50,10 @@ def dial_status_list():
                        (6,'CHANNEL UNAVAILABLE'),(7,'CANCELED'),)
     return DIAL_STATUS_LIST
 
-
 def day_range():
     DAYS = range(1,32)
     days = map(lambda x:(x,x),DAYS)
     return days
-
 
 def purchase_amount_list():
     purchase_amount_arr = config_value('purchase_amount').split(":")
@@ -67,7 +71,6 @@ def validate_days(year,month,day):
         return total_days[1]
     else:
         return day
-
 
 def month_year_range():
     tday = datetime.today()

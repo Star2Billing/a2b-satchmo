@@ -222,7 +222,11 @@ L10N_SETTINGS = {
 
 }
 
-
+ADMIN_REORDER = (
+    ("customer", ("Card","SipBuddies" ,"IaxBuddies","Callerid","Cardgroup","Speeddial")),
+    ("call_report", ("Call",)),
+    ("system_settings", ("Config", "ConfigGroup")),
+)
 
 #### Satchmo unique variables ####
 from django.conf.urls.defaults import patterns, include

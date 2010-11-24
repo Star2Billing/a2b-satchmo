@@ -77,13 +77,21 @@ class CustImport(forms.Form):
             raise forms.ValidationError(_(u'Document types accepted: %s' % ' '.join(file_exts)))
         else:
             return filename
-"""
+
 class CalleridForm(ModelForm):        
     cid = forms.CharField(label=_('Caller ID'), widget=forms.TextInput(attrs={'size': 15}))
     #id_cc_card = forms.IntegerField()
-    #id_cc_card = forms.ModelMultipleChoiceField(queryset=Card.objects.all())
-    activated = forms.TypedChoiceField(label=_('Status'),coerce=bool,widget=forms.RadioSelect,choices=(('t', 'True'), ('f', 'False')))    
+    id_cc_card = forms.ChoiceField(label=_('Card ID'),choices=customer_id_list(),required=False,help_text=_("Define the card number ID to use."))
+    #activated = forms.TypedChoiceField(label=_('Status'),required=False,coerce=bool,widget=forms.RadioSelect,)
     class Meta:
         model = Callerid
-        fields = ['cid', 'card_id','activated',]
-"""
+        fields = ['cid','activated','id_cc_card',]
+
+class SpeeddiaForm(ModelForm):
+    speeddial = forms.ChoiceField(label=_('Speed dial'),required=False,choices=speed_dial_range(),)
+    name = forms.CharField(label=_('Name'),widget=forms.TextInput(attrs={'size': 15}),required=False,help_text=_("Enter the name or label that will identify this speed dial."))
+    phone = forms.CharField(label=_('Phone'),widget=forms.TextInput(attrs={'size': 15}),required=False,help_text=_("Enter the phone number for the speed dial."))
+    id_cc_card = forms.ChoiceField(label=_('Card ID'),choices=customer_id_list(),required=False,help_text=_("Define the card number ID to use."))
+    class Meta:
+        model = Speeddial
+        fields = ['speeddial','name','phone','id_cc_card']

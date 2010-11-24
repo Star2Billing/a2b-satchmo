@@ -36,7 +36,10 @@ class ProviderAdmin(admin.ModelAdmin):
 
 admin.site.register(Provider, ProviderAdmin)
 
-
+class TrunkInline(admin.TabularInline):
+    model = Trunk
+    fk = 'id_trunk'
+    
 class TrunkAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
@@ -53,9 +56,19 @@ admin.site.register(Trunk, TrunkAdmin)
 class AlarmAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'periode','type', 'id_trunk')
     list_display_links = ('id', 'name',) 
-
+    inline = [TrunkInline]
 admin.site.register(Alarm, AlarmAdmin)
 
+class CardgroupAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description')
+    list_display_links = ('name', 'description',)
+
+admin.site.register(Cardgroup, CardgroupAdmin)
+
+
+class CardInline(admin.TabularInline):
+    model = Card
+    #fk_name = "id"
 
 class CardAdmin(admin.ModelAdmin):
     fieldsets = (
@@ -164,11 +177,14 @@ class CardAdmin(admin.ModelAdmin):
 
 admin.site.register(Card, CardAdmin)
 #databrowse.site.register(Card)
-"""
-class CardInline(admin.TabularInline):
-    model = Trunk
-    fk_name = "id_trunk"
-"""
+
+class SpeeddialAdmin(admin.ModelAdmin):
+    form = SpeeddiaForm
+    list_display = ('creationdate', 'acc_no','name','phone','speeddial')
+    list_display_links = ('name',)
+
+admin.site.register(Speeddial, SpeeddialAdmin)
+
 class CallAdmin(admin.ModelAdmin):
     list_display = ('starttime','src','dnid','calledstation','destination_name' ,'card_id_link','id_trunk','buy','call_charge','duration','terminatecauseid','sipiax')
     list_filter = ['starttime', 'calledstation']    
@@ -176,8 +192,8 @@ class CallAdmin(admin.ModelAdmin):
     date_hierarchy = ('starttime')
     ordering = ('-id',)
     #list_editable = ['src']
-    change_list_template = 'admin/customer/call/change_list.html'    
-    #inlines = [CardInline]
+    change_list_template = 'admin/customer/call/change_list.html'        
+    
     def __init__(self, *args, **kwargs):
         super(CallAdmin, self).__init__(*args, **kwargs)
         self.list_display_links = (None, )    
@@ -209,19 +225,23 @@ admin.site.register(Call, CallAdmin)
 
 
 class CalleridAdmin(admin.ModelAdmin):
-    #form = CalleridForm
+    form = CalleridForm
     list_display = ('cid','customer_acc_no','customer_name','is_active')
+    #prepopulated_fields = {"cid": ("cid",)}
+    radio_fields = {"activated": admin.HORIZONTAL}    
     search_fields = ('cid', 'id_cc_card')
     ordering = ('id',)
-    actions = ['make_active_deactive']
-
-    def make_active_deactive(self, request, queryset):        
+    actions = ['make_active_deactive']    
+    def make_active_deactive(self, request, queryset):
+        rows_updated = 0
         for i in queryset:
             callerid = Callerid.objects.values('activated').get(id=i.id)           
             if callerid['activated'] == 't':
-                rows_updated = Callerid.objects.values('activated').filter(id=i.id).update(activated='f')
+                Callerid.objects.values('activated').filter(id=i.id).update(activated='f')
+                rows_updated = rows_updated + 1
             else:
-                rows_updated = Callerid.objects.values('activated').filter(id=i.id).update(activated='t')
+                Callerid.objects.values('activated').filter(id=i.id).update(activated='t')
+                rows_updated = rows_updated + 1
                 
         if rows_updated == 1:
             message_bit = "1 caller id was"

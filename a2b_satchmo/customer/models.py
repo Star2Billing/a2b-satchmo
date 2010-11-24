@@ -151,6 +151,8 @@ class Provider(models.Model):
     description = models.TextField(blank=True)
     class Meta:
         db_table = u'cc_provider'
+        app_label = 'Providers'
+        
     def __unicode__(self):
         return '[%s] %s' %(self.id, self.provider_name)
 
@@ -175,6 +177,7 @@ class Trunk(Model):
     if_max_use = models.IntegerField(null=True, blank=True)
     class Meta:
         db_table = u'cc_trunk'
+        app_label = 'Providers'
 
     def __unicode__(self):
         return '%s' %(self.trunkcode)
@@ -186,7 +189,7 @@ class Alarm(models.Model):
     type = models.IntegerField()
     maxvalue = models.FloatField()
     minvalue = models.FloatField()
-    id_trunk = models.ForeignKey(Trunk, db_column ="id_trunk", null=True, blank=True)
+    id_trunk = models.ForeignKey(Trunk, db_column ="id_trunk", null=True, blank=True)#edit_inline=models.TABULAR,
     status = models.IntegerField()
     numberofrun = models.IntegerField()
     numberofalarm = models.IntegerField()
@@ -195,6 +198,7 @@ class Alarm(models.Model):
     emailreport = models.CharField(max_length=150, blank=True)
     class Meta:
         db_table = u'cc_alarm'
+        app_label = 'Providers'
 
     def __unicode__(self):
         return '[%s] %s' %(self.id, self.name)
@@ -261,6 +265,9 @@ class Cardgroup(models.Model):
 
     class Meta:
         db_table = u'cc_card_group'
+        app_label = 'customer'
+        verbose_name = _("Groups")
+        verbose_name_plural = _("Groups")
 
 class Cardseria(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -432,6 +439,7 @@ class Card(models.Model):
     
     class Meta:
         db_table = u'cc_card'
+        app_label = 'customer'
         verbose_name = _("Customer")
         verbose_name_plural = _("Customer")
 
@@ -496,7 +504,7 @@ class Call(models.Model):
     
     class Meta:
         db_table = u'cc_call'
-
+        app_label = 'call_report'
 
         
 class CallArchive(models.Model):
@@ -556,14 +564,15 @@ class CallbackSpool(models.Model):
 
 class Callerid(models.Model):
     id = models.IntegerField(primary_key=True)
-    cid = models.CharField(unique=True, max_length=255)
-    id_cc_card = models.IntegerField()
-    #id_cc_card = models.ManyToManyField(Card, blank=True)    
+    cid = models.CharField(unique=True, max_length=255,)
+    id_cc_card = models.IntegerField(help_text=_("Define the card number ID to use."))
+    #id_cc_card = models.ManyToManyField(Card, blank=True, )
     #id_cc_card = models.ForeignKey(Card,db_column='card_id',related_name='+',null=True, blank=True)
-    activated = models.CharField(max_length=3)
+    activated = models.CharField(_('Status') ,max_length=1,choices=generic_true_false_list,)#
     
     class Meta:
         db_table = u'cc_callerid'
+        app_label = 'customer'
         verbose_name_plural = "Caller ID"
 
     def customer_acc_no(self):
@@ -767,6 +776,7 @@ class ConfigGroup(models.Model):
 
     class Meta:
         db_table = u'cc_config_group'
+        app_label = 'system_settings'
         verbose_name_plural = "Group List"
         
 class Config(models.Model):
@@ -782,6 +792,7 @@ class Config(models.Model):
     
     class Meta:
         db_table = u'cc_config'
+        app_label = 'system_settings'
         verbose_name_plural = "Global List"        
 
 class CcConfiguration(models.Model):
@@ -795,8 +806,6 @@ class CcConfiguration(models.Model):
     set_function = models.CharField(max_length=765, blank=True)
     class Meta:
         db_table = u'cc_configuration'
-
-
 
 
 class CcDid(models.Model):
@@ -938,7 +947,8 @@ class IaxBuddies(models.Model):
     maxcallnumbers = models.CharField(max_length=30,help_text=_("No supported by Realtime"))
     maxcallnumbers_nonvalidated = models.CharField(max_length=30,help_text=_("No supported by Realtime"))
     class Meta:
-        db_table = u'cc_iax_buddies'        
+        db_table = u'cc_iax_buddies'
+        app_label = 'customer'
         verbose_name_plural = _("IAX Account")
         
     def default_ip(self):
@@ -1444,6 +1454,7 @@ class SipBuddies(models.Model):
     rtpkeepalive = models.CharField(max_length=45)
     class Meta:
         db_table = u'cc_sip_buddies'
+        app_label = 'customer'
         verbose_name_plural = _("SIP Account")
 
     def default_ip(self):
@@ -1505,7 +1516,7 @@ class SipBuddiesEmpty(models.Model):
     class Meta:
         db_table = u'cc_sip_buddies_empty'
 
-class CcSpeeddial(models.Model):
+class Speeddial(models.Model):
     id = models.IntegerField(primary_key=True)
     id_cc_card = models.IntegerField(unique=True)
     phone = models.CharField(max_length=300)
@@ -1514,6 +1525,16 @@ class CcSpeeddial(models.Model):
     creationdate = models.DateTimeField()
     class Meta:
         db_table = u'cc_speeddial'
+        app_label = 'customer'
+        verbose_name = _("Speed Dial")
+        verbose_name_plural = _("Speed Dial")
+
+    def acc_no(self):
+        if self.id_cc_card is not None:
+            card = Card.objects.get(pk=self.id_cc_card)
+            return card.username 
+        else:
+            return self.id_cc_card
 
 class CcStatusLog(models.Model):
     id = models.IntegerField(primary_key=True)

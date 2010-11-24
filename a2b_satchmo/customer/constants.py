@@ -21,6 +21,8 @@ simultaccess_list = ((1,"SIMULTANEOUS ACCESS"),
 
 generic_yes_no_list = ((0,'No'),(1,'Yes'))
 
+generic_true_false_list = (('t','True'),('f','False'))
+
 enableexpire_list = ((0,'NO EXPIRY'),
                      (1,'EXPIRE DATE'),
                      (2,'EXPIRE DAYS SINCE FIRST USE'),
