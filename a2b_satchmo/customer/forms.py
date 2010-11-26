@@ -4,9 +4,10 @@ from a2b_satchmo.customer.function_def import *
 from django.forms import ModelForm
 from django.contrib import *
 from django.contrib.admin.widgets import *
-from uni_form.helpers import *
 from django.utils.translation import ugettext_lazy as _
 from satchmo_store.accounts.forms import RegistrationForm
+from uni_form.helpers import FormHelper, Submit, Reset
+from uni_form.helpers import *
 #from django.shortcuts import render_to_response
 #from datetime import *
 
@@ -61,7 +62,34 @@ class SearchForm(forms.Form):
     show = forms.TypedChoiceField(label=u'SHOW :',coerce=bool,choices=dial_status_list(),required=False,)#,widget=forms.RadioSelect
     result = forms.TypedChoiceField(label=u'RESULT :',coerce=bool,choices=(('min', 'Minutes'), ('sec', 'Seconds')),widget=forms.RadioSelect,required=False,)
     currency  = forms.ChoiceField(label=u'CURRENCY :',choices=currency_list(),required=False,)
+
+class CardListForm(forms.Form):
+    card_list = forms.ChoiceField(label=u'CUSTOMER :',choices=customer_id_list(combo="yes"),required=False,)
+
+class CardHistoryForm(SearchForm,CardListForm):
+    """
+    layout = Layout(
+        Fieldset(
+                '',
+                Row(
+                    Column('fromday_chk','from_day','from_month_year','today_chk','to_day','to_month_year'),                    
+                ),                 
+        ),        
+    )
+
+    # Attach a formHelper to your forms class.
+    helper = FormHelper()
+
+    submit = Submit('search', _('Search'))
+    helper.add_input(submit)
+    helper.use_csrf_protection = True
+    helper.add_layout(layout)
     
+    """
+    def __init__(self, *args, **kwargs):
+        super(CardHistoryForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = ['card_list','fromday_chk', 'from_day','from_month_year','today_chk','to_day','to_month_year']
+
 
 class CheckoutPaymentForm(forms.Form):
     payment_method = forms.TypedChoiceField(coerce=bool,choices=(('paypal', 'PayPal'), ),widget=forms.RadioSelect)#('moneybookers', 'Moneybookers.com'), ('plugnpay', 'PlugnPay')

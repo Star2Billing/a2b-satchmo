@@ -9,9 +9,14 @@ def country_list():
     list = Country.objects.all()
     return ((l.countrycode, l.countryname) for l in list)
 
-def customer_id_list():
-    list = Card.objects.all().order_by('id')
-    return ((l.id, l.id) for l in list)
+def customer_id_list(combo="no"):
+    list = []
+    if combo == "yes":
+        list.append( (0,'---') )
+    card_id_list = Card.objects.all().order_by('id')
+    for l in card_id_list:
+        list.append( (l.id,l.id) )
+    return list
 
 def speed_dial_range():
     LIST = range(0,9)
@@ -221,4 +226,69 @@ def call_record_common_fun(request, form_require="no"):
             tday = datetime.today()
             kwargs[ 'starttime__gte' ] = datetime(tday.year, tday.month, tday.day)
             
+        return kwargs
+
+#card history admin page fuction
+def card_history_status_common_fun(request, date_field_name ,form_require="no"):
+
+    card_id = variable_value(request,'card_list')    
+
+    if "fromday_chk" in request.POST:
+        fromday_chk     = 'on'
+        from_day        = int(request.POST['from_day'])
+        from_month_year = request.POST['from_month_year']
+        from_year       = int(request.POST['from_month_year'][0:4])
+        from_month      = int(request.POST['from_month_year'][5:7])
+        from_day        = validate_days(from_year,from_month,from_day)
+        start_date      = datetime(from_year,from_month,from_day)
+    else:
+        fromday_chk     = ''
+        from_day        = ''
+        from_month_year = ''
+        from_year       = ''
+        from_month      = ''
+        from_day        = ''
+        start_date      = ''
+
+    if "today_chk" in request.POST:
+        today_chk       = 'on'
+        to_day          = int(request.POST['to_day'])
+        to_month_year   = request.POST['to_month_year']
+        to_year         = int(request.POST['to_month_year'][0:4])
+        to_month        = int(request.POST['to_month_year'][5:7])
+        to_day          = validate_days(to_year,to_month,to_day)
+        end_date        = datetime(to_year,to_month,to_day)
+    else:
+        today_chk       = ''
+        to_day          = ''
+        to_month_year   = ''
+        to_year         = ''
+        to_month        = ''
+        to_day          = ''
+        end_date        = ''
+
+    from a2b_satchmo.customer.forms import CardHistoryForm
+    if form_require == "yes":
+        form = CardHistoryForm(initial={'card_list':card_id,'fromday_chk':fromday_chk,'from_day':from_day,'from_month_year':from_month_year,'today_chk':today_chk,'to_day':to_day,'to_month_year':to_month_year,})
+        return form
+
+    else:
+        kwargs = {}
+        
+        if card_id == '0' or card_id == '':
+            kwargs[ 'id_cc_card__in' ] = (l[0]  for l in customer_id_list())
+        else:
+            kwargs[ 'id_cc_card' ] = card_id
+            
+        if fromday_chk == 'on' and today_chk == 'on':
+            kwargs[ date_field_name + '__range' ] = (start_date, end_date)
+        if fromday_chk == 'on' and today_chk != 'on' :
+            kwargs[ date_field_name + '__gte' ] = start_date
+        if today_chk == 'on' and fromday_chk != 'on':
+            kwargs[ date_field_name + '__lte' ] = end_date
+
+        #if len(kwargs) == 0 or request.method == 'GET':
+        #        tday = datetime.today()
+        #        kwargs[ date_field_name + '__gte' ] = datetime(tday.year, tday.month, tday.day)
+
         return kwargs

@@ -717,6 +717,16 @@ class CardHistory(models.Model):
     description = models.TextField(blank=True)
     class Meta:
         db_table = u'cc_card_history'
+        app_label = 'customer'
+        verbose_name_plural = "History"
+
+    def customer_acc_no(self):
+        if self.id_cc_card is not None:
+            card = Card.objects.get(pk=self.id_cc_card)
+            return card.username
+        else:
+            return self.id_cc_card
+    customer_acc_no.short_description = "ACCOUNT NO"
 
 class CardPackageOffer(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -1536,13 +1546,35 @@ class Speeddial(models.Model):
         else:
             return self.id_cc_card
 
-class CcStatusLog(models.Model):
+class StatusLog(models.Model):
     id = models.IntegerField(primary_key=True)
-    status = models.IntegerField()
+    status = models.IntegerField(choices=card_status_list)
     id_cc_card = models.IntegerField()
     updated_date = models.DateTimeField()
     class Meta:
         db_table = u'cc_status_log'
+        app_label = 'customer'
+        verbose_name = _("status")
+        verbose_name_plural = _("Status")
+    def id_card(self):
+        return self.id_cc_card
+    id_card.short_description = "ID CARD"
+
+    def customer_acc_no(self):
+        if self.id_cc_card is not None:
+            card = Card.objects.get(pk=self.id_cc_card)
+            return card.username
+        else:
+            return ""
+    customer_acc_no.short_description = "ACCOUNT NO"
+
+    def last_name(self):
+        if self.id_cc_card is not None:
+            card = Card.objects.get(pk=self.id_cc_card)
+            return card.lastname
+        else:
+            return ""
+    last_name.short_description = "Lastname"
 
 class CcSubscriptionService(models.Model):
     id = models.IntegerField(primary_key=True)

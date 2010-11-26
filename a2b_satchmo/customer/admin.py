@@ -185,6 +185,73 @@ class SpeeddialAdmin(admin.ModelAdmin):
 
 admin.site.register(Speeddial, SpeeddialAdmin)
 
+
+class CardHistoryAdmin(admin.ModelAdmin):    
+    list_display = ('customer_acc_no','datecreated','description',)
+    change_list_template = 'admin/customer/cardhistory/change_list.html'
+    def __init__(self, *args, **kwargs):
+        super(CardHistoryAdmin, self).__init__(*args, **kwargs)
+        self.list_display_links = (None, )
+    
+    def get_urls(self):
+        urls = super(CardHistoryAdmin, self).get_urls()
+        my_urls = patterns('',(r'^admin/customer/cardhistory/$', self.admin_site.admin_view(self.changelist_view)),
+        )
+        return my_urls + urls
+
+    def queryset(self, request):
+        kwargs = {}
+        kwargs = card_history_status_common_fun(request,date_field_name='datecreated',form_require="no")
+        qs = super(CardHistoryAdmin, self).queryset(request)
+        return qs.filter(**kwargs).order_by('-datecreated')
+
+    def changelist_view(self, request,  extra_context=None):
+        if request.method == 'POST':
+            form = card_history_status_common_fun(request,date_field_name='datecreated',form_require="yes")
+        else:            
+            form = CardHistoryForm(initial={})
+        ctx = {
+            'form': form,
+            'has_add_permission': '',
+        }
+        return super(CardHistoryAdmin, self).changelist_view(request,  extra_context=ctx)
+     
+admin.site.register(CardHistory, CardHistoryAdmin)
+
+class StatusLogAdmin(admin.ModelAdmin):    
+    list_display = ('id_card','customer_acc_no','last_name','status','updated_date',)
+    list_filter = ['status',]
+    change_list_template = 'admin/customer/statuslog/change_list.html'
+    
+    def __init__(self, *args, **kwargs):
+        super(StatusLogAdmin, self).__init__(*args, **kwargs)
+        self.list_display_links = (None, )
+
+    def get_urls(self):
+        urls = super(StatusLogAdmin, self).get_urls()
+        my_urls = patterns('',(r'^admin/customer/statuslog/$', self.admin_site.admin_view(self.changelist_view)),
+        )
+        return my_urls + urls
+
+    def queryset(self, request):
+        kwargs = {}
+        kwargs = card_history_status_common_fun(request,date_field_name='updated_date',form_require="no")
+        qs = super(StatusLogAdmin, self).queryset(request)
+        return qs.filter(**kwargs).order_by('-updated_date')
+
+    def changelist_view(self, request,  extra_context=None):
+        if request.method == 'POST':
+            form = card_history_status_common_fun(request,date_field_name='updated_date',form_require="yes")
+        else:
+            form = CardHistoryForm(initial={})
+        ctx = {
+            'form': form,
+            'has_add_permission': '',
+        }
+        return super(StatusLogAdmin, self).changelist_view(request,  extra_context=ctx)
+
+admin.site.register(StatusLog, StatusLogAdmin)
+
 class CallAdmin(admin.ModelAdmin):
     list_display = ('starttime','src','dnid','calledstation','destination_name' ,'card_id_link','id_trunk','buy','call_charge','duration','terminatecauseid','sipiax')
     list_filter = ['starttime', 'calledstation']    
